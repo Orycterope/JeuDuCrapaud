@@ -36,7 +36,6 @@ pygame.display.set_caption('Tests')
 fenetre = pygame.display.set_mode((LARGEUR_FENETRE, HAUTEUR_FENETRE))
 
 fond = pygame.image.load("background.png").convert()
-refreshBackground()
 
 perso = pygame.image.load("perso.png").convert_alpha()
 position_perso = perso.get_rect()
