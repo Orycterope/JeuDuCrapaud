@@ -5,7 +5,7 @@ from pygame.locals import *
 class PlayerLocal:
     
     def __init__(self, controlleur):
-        return
+        self.controlleur = controlleur
         
     
     def waitForPlay(self):
@@ -16,6 +16,7 @@ class PlayerLocal:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     continuer = False
+                    self.controlleur.fenetre.fermer()
                 elif event.type == KEYDOWN:
                     if event.key == K_KP1:
                         move = [-1, 1]

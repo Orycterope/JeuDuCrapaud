@@ -49,6 +49,9 @@ class Fenetre:
         self.move(C.CRAPAUD_2, 10, 10)
         Controlleur.Controlleur(typePartie, self)
 
+    def fermer(self):
+        pygame.quit()
+
 
 
 
