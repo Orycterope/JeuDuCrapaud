@@ -33,7 +33,7 @@ class Controlleur:
             if self.checkMoveAllowed(moveAttempt) == True:
                 self.tourPlayer.position[0] += moveAttempt[0]
                 self.tourPlayer.position[1] += moveAttempt[1]
-                self.fenetre.move(self.tour, self.tourPlayer.position[0], self.tourPlayer.position[1])
+                self.fenetre.move(self.tour, moveAttempt[0], moveAttempt[1])
                 hasPlayed = True
         self.changeTour()
 
