@@ -42,7 +42,7 @@ class Fenetre:
 
         self.fond = pygame.image.load("res/background.png").convert()
         self.perso1 = pygame.image.load("res/perso.png").convert_alpha()
-        self.perso2 = pygame.image.load("res/perso.png").convert_alpha()
+        self.perso2 = pygame.image.load("res/perso2.png").convert_alpha()
         self.position_perso1 = self.perso1.get_rect()
         self.position_perso2 = self.perso2.get_rect()
         self.move(C.CRAPAUD_1, 3, 3)
