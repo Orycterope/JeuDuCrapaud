@@ -9,29 +9,38 @@ Created on 26 févr. 2015
 import pygame
 from pygame.locals import *
 
-def move(x, y):
-    global position_perso
-    position_perso = position_perso.move(x * 16, y * 16)
-    refresh()
+LARGEUR_FENETRE = 640
+HAUTEUR_FENETRE = 480
+
+
+def refreshBackground():
+    for i in range (0, LARGEUR_FENETRE // 32):
+        for j in range (0, HAUTEUR_FENETRE // 32):
+            fenetre.blit(fond, (i * 32, j * 32))
 
 def refresh():
-    fenetre.blit(fond, (0,0))   
+    refreshBackground()
     fenetre.blit(perso, position_perso)
     pygame.display.flip()
+
+def move(x, y):
+    global position_perso
+    position_perso = position_perso.move(x * 32, y * 32)
+    refresh()
 
 print("Hello World!")
 
 pygame.init()
 #pygame.key.set_repeat(1, 1)
 pygame.display.set_caption('Tests')
-fenetre = pygame.display.set_mode((640, 480))
+fenetre = pygame.display.set_mode((LARGEUR_FENETRE, HAUTEUR_FENETRE))
 
-fond = pygame.image.load("background.jpg").convert()
-fenetre.blit(fond, (0,0))
+fond = pygame.image.load("background.png").convert()
+refreshBackground()
 
 perso = pygame.image.load("perso.png").convert_alpha()
 position_perso = perso.get_rect()
-position_perso = position_perso.move(300, 200)
+move(3, 3)
 fenetre.blit(perso, position_perso)
 
 pygame.display.flip()
