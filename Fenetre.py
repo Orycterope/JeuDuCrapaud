@@ -45,7 +45,7 @@ class Fenetre:
 
     def lancePartie(self, typePartie):
 
-        self.fond1 = 22
+        self.fond1 = pygame.image.load("res/background.png").convert()
         self.fond2 = pygame.image.load("res/background2.png").convert()
         self.perso1 = pygame.image.load("res/perso.png").convert_alpha()
         self.perso2 = pygame.image.load("res/perso2.png").convert_alpha()
