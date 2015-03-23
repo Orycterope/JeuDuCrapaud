@@ -2,10 +2,11 @@ import pygame
 from Constantes import *
 from Controlleur import *
 
+
 class Fenetre:
 
-
     def __init__(self):
+
         pygame.init()
         pygame.display.set_caption('Jeu du Crapaud')
 
@@ -15,42 +16,41 @@ class Fenetre:
 
         self.lancePartie(PARTIE_DUO)
 
+    def refresh(self, plateau):
 
-    def refreshBackground(self):
-        for i in range (0, LARGEUR_FENETRE // 32):
-            for j in range (0, HAUTEUR_FENETRE // 32):
-                if (i + j)%2 == 0:
+        for i in range(LARGEUR_PLATEAU):
+            for j in range(HAUTEUR_PLATEAU):
+                case = plateau[i][j]
+                if case == CASE_MOUVEMENT:
                     self.fenetre.blit(self.fond1, (i * 32, j * 32))
-                else:
+                elif case == CASE_BAVE:
+                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
+                    #baveIcon
+                elif case == CRAPAUD_1:
+                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
+                    self.fenetre.blit(self.perso1,(i * 32, j * 32))
+                elif case == CRAPAUD_2:
+                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
+                    self.fenetre.blit(self.perso2,(i * 32, j * 32))
+                elif case == CASE_POINT_EMPTY:
                     self.fenetre.blit(self.fond2, (i * 32, j * 32))
-
-    def refresh(self):
-        self.refreshBackground()
-        self.fenetre.blit(self.perso1, self.position_perso1)
-        self.fenetre.blit(self.perso2, self.position_perso2)
+                elif case == CASE_POINT_GAINED:
+                    pass
+                    #pointIcone
         pygame.display.flip()
 
-    def move(self, crapaud, x, y):
-
-        if crapaud == CRAPAUD_1:
-            self.position_perso1 = self.position_perso1.move(x * 32, y * 32)
-        else:
-            self.position_perso2 = self.position_perso2.move(x * 32, y * 32)
-        self.refresh()
 
     def afficheMenuPricipal(self):
         pass
 
     def lancePartie(self, typePartie):
 
-        self.fond1 = pygame.image.load("res/background.png").convert()
+        self.fond1 = 22
         self.fond2 = pygame.image.load("res/background2.png").convert()
         self.perso1 = pygame.image.load("res/perso.png").convert_alpha()
         self.perso2 = pygame.image.load("res/perso2.png").convert_alpha()
         self.position_perso1 = self.perso1.get_rect()
         self.position_perso2 = self.perso2.get_rect()
-        self.move(CRAPAUD_1, 3, 3)
-        self.move(CRAPAUD_2, 10, 10)
         Controlleur(typePartie, self)
 
     def fermer(self):
