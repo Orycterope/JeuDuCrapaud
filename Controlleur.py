@@ -1,7 +1,7 @@
 __author__ = 'thomas'
 
 import PlayerLocal
-import Constantes as C
+from Constantes import *
 
 class Controlleur:
 
@@ -9,10 +9,18 @@ class Controlleur:
 
         self.typeDePartie = typeDePartie
         self.fenetre = fenetre
-        self.plateau = []
+        self.plateau = [None] * LARGEUR_PLATEAU
+
+        for i in range(0, LARGEUR_PLATEAU):
+            self.plateau[i] = [None] * HAUTEUR_PLATEAU
+            for j in range(0, HAUTEUR_PLATEAU):
+                if (i + j)%2 == 0:
+                    self.plateau[i][j] = CASE_MOUVEMENT
+                else:
+                    self.plateau[i][j] = CASE_POINT_EMPTY
 
         self.joueur1 = PlayerLocal.PlayerLocal(self)
-        if typeDePartie == C.PARTIE_DUO:
+        if typeDePartie == PARTIE_DUO:
             self.joueur2 = PlayerLocal.PlayerLocal(self)
             self.tour = 1
             self.tourPlayer = self.joueur1
@@ -38,12 +46,14 @@ class Controlleur:
         self.changeTour()
 
     def changeTour(self):
-        if self.tour == C.CRAPAUD_1:
+        if self.tour == CRAPAUD_1:
             self.tourPlayer = self.joueur2
-            self.tour = C.CRAPAUD_2
+            self.tour = CRAPAUD_2
         else:
             self.tourPlayer = self.joueur1
-            self.tour = C.CRAPAUD_1
+            self.tour = CRAPAUD_1
 
     def checkMoveAllowed(self, moveAttempt):
+        x = moveAttempt[0]
+        y = moveAttempt[1]
         return True

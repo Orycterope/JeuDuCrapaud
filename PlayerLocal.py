@@ -1,5 +1,6 @@
 __author__ = 'thomas'
 import pygame
+import sys
 from pygame.locals import *
 
 class PlayerLocal:
@@ -16,8 +17,7 @@ class PlayerLocal:
             for event in pygame.event.get():
 
                 if event.type == QUIT:
-                    continuer = False
-                    self.controlleur.fenetre.fermer()
+                    sys.exit()
                 elif event.type == KEYDOWN:
                     if event.key == K_KP1:
                         move = [-1, 1]
