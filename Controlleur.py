@@ -69,4 +69,18 @@ class Controlleur:
     def checkMoveAllowed(self, moveAttempt):
         dx = moveAttempt[0]
         dy = moveAttempt[1]
+        coord = self.getCoordCrapaud(self.tour)
+        x = coord[0] + dx
+        y = coord[1] + dy
+        if x < 0:
+            return False
+        if y < 0:
+            return False
+        if y >= HAUTEUR_PLATEAU:
+            return False
+        if x >= LARGEUR_PLATEAU:
+            return False
+        if self.plateau[x][y] != CASE_MOUVEMENT:
+            return False
+
         return True
