@@ -25,7 +25,7 @@ class Fenetre:
                     self.fenetre.blit(self.fond1, (i * 32, j * 32))
                 elif case == CASE_BAVE:
                     self.fenetre.blit(self.fond1, (i * 32, j * 32))
-                    #baveIcon
+                    self.fenetre.blit(self.bave, (i * 32, j * 32))
                 elif case == CRAPAUD_1:
                     self.fenetre.blit(self.fond1, (i * 32, j * 32))
                     self.fenetre.blit(self.perso1,(i * 32, j * 32))
@@ -49,6 +49,7 @@ class Fenetre:
         self.fond2 = pygame.image.load("res/background2.png").convert()
         self.perso1 = pygame.image.load("res/perso.png").convert_alpha()
         self.perso2 = pygame.image.load("res/perso2.png").convert_alpha()
+        self.bave = pygame.image.load("res/goutte.png").convert_alpha()
         self.position_perso1 = self.perso1.get_rect()
         self.position_perso2 = self.perso2.get_rect()
         Controlleur(typePartie, self)
