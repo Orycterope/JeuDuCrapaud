@@ -12,9 +12,8 @@ class Fenetre:
 
         self.fenetre = pygame.display.set_mode((LARGEUR_FENETRE, HAUTEUR_FENETRE))
 
-        #TODO : afficher le menu principal et lancer la partie en conséquence
+        self.afficheMenuPricipal()
 
-        self.lancePartie(PARTIE_DUO)
 
     def refresh(self, plateau):
 
@@ -41,9 +40,17 @@ class Fenetre:
 
 
     def afficheMenuPricipal(self):
-        pass
+
+        pygame.mixer.music.load("res/alex-f.mp3")
+        pygame.mixer.music.play()
+
+        #TODO : afficher le menu principal et lancer la partie en conséquence
+        self.lancePartie(PARTIE_DUO)
 
     def lancePartie(self, typePartie):
+
+        pygame.mixer.music.load("res/popcorn.mp3")
+        pygame.mixer.music.play(-1) # param -1 fait répéter à l'infini.
 
         self.fond1 = pygame.image.load("res/background.png").convert()
         self.fond2 = pygame.image.load("res/background2.png").convert()
@@ -52,6 +59,8 @@ class Fenetre:
         self.bave = pygame.image.load("res/goutte.png").convert_alpha()
         self.position_perso1 = self.perso1.get_rect()
         self.position_perso2 = self.perso2.get_rect()
+
+
         Controlleur(typePartie, self)
 
     def fermer(self):
