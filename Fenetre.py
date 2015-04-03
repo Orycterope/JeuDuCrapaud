@@ -1,6 +1,7 @@
 import pygame
 from Constantes import *
 from Controlleur import *
+from pygame.locals import *
 
 
 class Fenetre:
@@ -39,13 +40,34 @@ class Fenetre:
         pygame.display.flip()
 
 
+    def refreshMenu(self, hlBlock):
+
+        self.fenetre.blit(self.bgmenu, (10,10))
+        pass
+
     def afficheMenuPricipal(self):
 
         pygame.mixer.music.load("res/alex-f.mp3")
-        pygame.mixer.music.play()
+        pygame.mixer.music.play(-1)
+        self.bgmenu = pygame.image.load("res/bgmenu.jpg").convert()
 
-        #TODO : afficher le menu principal et lancer la partie en conséquence
-        self.lancePartie(PARTIE_DUO)
+        continuer = True
+        highlightedBlock = 2
+        while continuer == True:
+            self.refreshMenu(highlightedBlock)
+            for e in pygame.event.get():
+                if e.type == QUIT:
+                    self.fermer()
+                if e.type == KEYDOWN:
+                    if e.key == K_KP4 or e.key == K_LEFT:
+                        highlightedBlock = (highlightedBlock - 1) % 3
+                    if e.key == K_KP6 or e.key == K_RIGHT:
+                        highlightedBlock = (highlightedBlock + 1) % 3
+                    if e.key == K_KP_ENTER or e.key == K_RETURN:
+                        print("enter")
+                        continuer = False
+
+        self.lancePartie(highlightedBlock)
 
     def lancePartie(self, typePartie):
 
