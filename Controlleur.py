@@ -1,6 +1,7 @@
 __author__ = 'thomas'
 
 import PlayerLocal
+import PlayerDistant
 from Constantes import *
 
 class Controlleur:
@@ -19,13 +20,22 @@ class Controlleur:
                 else:
                     self.plateau[i][j] = CASE_POINT_EMPTY
 
-        self.joueur1 = PlayerLocal.PlayerLocal(self)
+
         if typeDePartie == PARTIE_DUO:
+            self.joueur1 = PlayerLocal.PlayerLocal(self)
             self.joueur2 = PlayerLocal.PlayerLocal(self)
-            self.tour = CRAPAUD_1
-            self.tourPlayer = self.joueur1
+        elif typeDePartie == PARTIE_EN_LIGNE:
+            if fenetre.isServer:
+                self.joueur1 = PlayerLocal.PlayerLocal(self)
+                self.joueur2 = PlayerDistant.PlayerDistant(self, self.fenetre.connexion)
+            else:
+                self.joueur2 = PlayerLocal.PlayerLocal(self)
+                self.joueur1 = PlayerDistant.PlayerDistant(self, self.fenetre.connexion)
         else:
             pass
+
+        self.tour = CRAPAUD_1
+        self.tourPlayer = self.joueur1
 
         self.plateau[0][0] = CRAPAUD_1
         self.plateau[10][10] = CRAPAUD_2
@@ -48,7 +58,8 @@ class Controlleur:
             moveAttempt = MOVECODE[moveAttemptLetter]
             if self.checkMoveAllowed(moveAttempt) == True:
                 self.move(self.tour, moveAttempt[0], moveAttempt[1])
-                self.tourPlayer.informMove(moveAttemptLetter)
+                self.joueur1.informMove(moveAttemptLetter)
+                self.joueur2.informMove(moveAttemptLetter)
                 hasPlayed = True
         self.changeTour()
 

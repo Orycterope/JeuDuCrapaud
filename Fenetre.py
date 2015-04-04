@@ -16,6 +16,7 @@ class Fenetre:
         pygame.display.set_caption('Jeu du Crapaud')
 
         self.connexion = None
+        self.isServer = False # utilisé pour déterminer qui commence
 
         self.fenetre = pygame.display.set_mode((LARGEUR_FENETRE, HAUTEUR_FENETRE))
 
@@ -73,6 +74,7 @@ class Fenetre:
         self.refreshMenu(highlightedBlock)
         while continuer == True:
             for e in pygame.event.get():
+                print(str(highlightedBlock))
                 if e.type == QUIT:
                     self.fermer()
                 if e.type == KEYDOWN:
@@ -83,6 +85,20 @@ class Fenetre:
                     if e.key == K_KP_ENTER or e.key == K_RETURN:
                         continuer = False
                     self.refreshMenu(highlightedBlock)
+
+        if highlightedBlock == PARTIE_EN_LIGNE:
+            continuer = True
+            while continuer == True:
+                for e in pygame.event.get():
+                    if e.type == QUIT:
+                        self.fermer()
+                    if e.type == KEYDOWN:
+                        if e.key == K_s:
+                            continuer = False
+                            self.multiServeur()
+                        if e.key == K_c:
+                            continuer = False
+                            self.multiClient()
 
         self.lancePartie(highlightedBlock)
 
@@ -96,9 +112,9 @@ class Fenetre:
 
 
     def multiServeur(self):
-        pass
+
+        self.isServer = True
         HOST = '127.0.0.1' #'192.168.1.28'
-        PORT = 4545
 
         # 1) création du socket :
         mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -111,15 +127,15 @@ class Fenetre:
             sys.exit()
         # 3) Attente de la requête de connexion d'un client :
         print("Serveur prêt, en attente de requêtes ...")
-        mySocket.listen(2) # 1 ou 2 ?
+        mySocket.listen(1) # 1 ou 2 ?
 
         # 4) Etablissement de la connexion :
         self.connexion, adresse = mySocket.accept()
         print("Client connecté, adresse IP %s, port %s" % (adresse[0], adresse[1]))
 
     def multiClient(self):
+
         HOST = '127.0.0.1'
-        PORT = 4545
 
         # 1) création du socket :
         self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
