@@ -12,11 +12,12 @@ class PlayerLocal:
     def waitForPlay(self):
 
         continuer = True
+        pygame.event.clear()
         while continuer:
             for event in pygame.event.get():
 
                 if event.type == QUIT:
-                    sys.exit()
+                   self.controlleur.fenetre.fermer()
                 elif event.type == KEYDOWN:
                     if event.key == K_KP1:
                         moveLetter = 'F'

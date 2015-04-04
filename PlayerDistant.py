@@ -14,16 +14,13 @@ class PlayerDistant:
 
     def waitForPlay(self):
 
-
         lettre = self.connexion.recv(1).decode('ascii')
-        print("Received : ", lettre)
 
-        if lettre.upper() == "FIN" or lettre == "":
+        if lettre.upper() == "Z" or lettre == "":
+            print("Connexion fermée par le programme distant")
             self.controlleur.fenetre.fermer()
-
         return lettre
 
     def informMove(self, lettre):
 
-        print("Sending : ", lettre)
         self.connexion.send(lettre.encode('ascii'))

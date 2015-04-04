@@ -150,7 +150,12 @@ class Fenetre:
 
 
     def fermer(self):
-        self.connexion.close()
+        if self.connexion != None:
+            try:
+                self.connexion.send("Z".encode('ascii'))
+            except socket.error:
+                pass
+            self.connexion.close()
         pygame.quit()
         sys.exit()
 
