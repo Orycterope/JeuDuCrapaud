@@ -3,6 +3,7 @@ import sys
 from Constantes import *
 from Controlleur import *
 from pygame.locals import *
+import socket
 
 
 class Fenetre:
@@ -13,6 +14,8 @@ class Fenetre:
 
         pygame.init()
         pygame.display.set_caption('Jeu du Crapaud')
+
+        self.connexion = None
 
         self.fenetre = pygame.display.set_mode((LARGEUR_FENETRE, HAUTEUR_FENETRE))
 
@@ -91,7 +94,47 @@ class Fenetre:
 
         Controlleur(typePartie, self)
 
+
+    def multiServeur(self):
+        pass
+        HOST = '127.0.0.1' #'192.168.1.28'
+        PORT = 4545
+
+        # 1) création du socket :
+        mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        # 2) liaison du socket à une adresse précise :
+        try:
+            mySocket.bind((HOST, PORT))
+        except socket.error:
+            print("La liaison du socket à l'adresse choisie a échoué.")
+            sys.exit()
+        # 3) Attente de la requête de connexion d'un client :
+        print("Serveur prêt, en attente de requêtes ...")
+        mySocket.listen(2) # 1 ou 2 ?
+
+        # 4) Etablissement de la connexion :
+        self.connexion, adresse = mySocket.accept()
+        print("Client connecté, adresse IP %s, port %s" % (adresse[0], adresse[1]))
+
+    def multiClient(self):
+        HOST = '127.0.0.1'
+        PORT = 4545
+
+        # 1) création du socket :
+        self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        # 2) envoi d'une requête de connexion au serveur :
+        try:
+            self.connexion.connect((HOST, PORT))
+        except socket.error:
+            print("La connexion a échoué.")
+            self.fermer()
+        print("Connexion établie avec le serveur.")
+
+
     def fermer(self):
+        self.connexion.close()
         pygame.quit()
         sys.exit()
 

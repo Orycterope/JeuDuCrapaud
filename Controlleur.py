@@ -44,9 +44,11 @@ class Controlleur:
     def faireJouer(self):
         hasPlayed = False
         while hasPlayed != True:
-            moveAttempt = self.tourPlayer.waitForPlay()
+            moveAttemptLetter = self.tourPlayer.waitForPlay()
+            moveAttempt = MOVECODE[moveAttemptLetter]
             if self.checkMoveAllowed(moveAttempt) == True:
                 self.move(self.tour, moveAttempt[0], moveAttempt[1])
+                self.tourPlayer.informMove(moveAttemptLetter)
                 hasPlayed = True
         self.changeTour()
 

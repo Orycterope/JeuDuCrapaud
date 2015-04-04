@@ -10,8 +10,7 @@ class PlayerLocal:
         
     
     def waitForPlay(self):
-        
-        move = [0, 0]
+
         continuer = True
         while continuer:
             for event in pygame.event.get():
@@ -20,28 +19,32 @@ class PlayerLocal:
                     sys.exit()
                 elif event.type == KEYDOWN:
                     if event.key == K_KP1:
-                        move = [-1, 1]
+                        moveLetter = 'F'
                         continuer = False
                     if event.key == K_KP2:
-                        move = [0, 2]
+                        moveLetter = 'E'
                         continuer = False
                     if event.key == K_KP3:
-                        move = [1, 1]
+                        moveLetter = 'D'
                         continuer = False
                     if event.key == K_KP4:
-                        move = [-2, 0]
+                        moveLetter = 'G'
                         continuer = False
                     if event.key == K_KP6:
-                        move = [2, 0]
+                        moveLetter = 'C'
                         continuer = False
                     if event.key == K_KP7:
-                        move = [-1, -1]
+                        moveLetter = 'H'
                         continuer = False
                     if event.key == K_KP8:
-                        move = [0, -2]
+                        moveLetter = 'A'
                         continuer = False
                     if event.key == K_KP9:
-                        move = [1, -1]
+                        moveLetter = 'B'
                         continuer = False
 
-        return move
+        return moveLetter
+
+    def informMove(self, lettre):
+
+        pass

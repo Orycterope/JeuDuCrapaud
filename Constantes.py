@@ -16,3 +16,5 @@ CASE_POINT_EMPTY = "P"
 CASE_POINT_GAINED = "G"
 CASE_BAVE = "B"
 CASE_CRAPAUD = "C"
+
+MOVECODE = {'A': [0,-2], 'B': [1,-1], 'C': [2,0], 'D': [1,1], 'E': [0,2], 'F': [-1,1], 'G': [-2,0], 'H': [-1,-1]}
