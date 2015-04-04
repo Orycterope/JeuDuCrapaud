@@ -58,10 +58,15 @@ class Controlleur:
             moveAttempt = MOVECODE[moveAttemptLetter]
             if self.checkMoveAllowed(moveAttempt) == True:
                 self.move(self.tour, moveAttempt[0], moveAttempt[1])
-                self.joueur1.informMove(moveAttemptLetter)
-                self.joueur2.informMove(moveAttemptLetter)
+                self.informOtherPlayer(moveAttemptLetter)
                 hasPlayed = True
         self.changeTour()
+
+    def informOtherPlayer(self, lettre):
+        if self.tour == CRAPAUD_1:
+            self.joueur2.informMove(lettre)
+        else:
+            self.joueur1.informMove(lettre)
 
     def changeTour(self):
         if self.tour == CRAPAUD_1:

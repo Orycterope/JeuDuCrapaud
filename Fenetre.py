@@ -114,7 +114,7 @@ class Fenetre:
     def multiServeur(self):
 
         self.isServer = True
-        HOST = '127.0.0.1' #'192.168.1.28'
+        HOST = '192.168.1.28'
 
         # 1) création du socket :
         mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -135,7 +135,7 @@ class Fenetre:
 
     def multiClient(self):
 
-        HOST = '127.0.0.1'
+        HOST = '192.168.1.28'
 
         # 1) création du socket :
         self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

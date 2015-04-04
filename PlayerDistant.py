@@ -14,7 +14,9 @@ class PlayerDistant:
 
     def waitForPlay(self):
 
+
         lettre = self.connexion.recv(1).decode('ascii')
+        print("Received : ", lettre)
 
         if lettre.upper() == "FIN" or lettre == "":
             self.controlleur.fenetre.fermer()
@@ -23,4 +25,5 @@ class PlayerDistant:
 
     def informMove(self, lettre):
 
+        print("Sending : ", lettre)
         self.connexion.send(lettre.encode('ascii'))
