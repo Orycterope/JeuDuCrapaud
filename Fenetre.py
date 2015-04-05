@@ -25,9 +25,16 @@ class Fenetre:
         self.perso1 = pygame.image.load("res/perso.png").convert_alpha()
         self.perso2 = pygame.image.load("res/perso2.png").convert_alpha()
         self.bave = pygame.image.load("res/goutte.png").convert_alpha()
+        self.point = pygame.image.load("res/point.png").convert_alpha()
+        self.bgmenu = pygame.image.load("res/bgmenu.png").convert_alpha()
         self.position_perso1 = self.perso1.get_rect()
         self.position_perso2 = self.perso2.get_rect()
-        self.bgmenu = pygame.image.load("res/bgmenu.png").convert()
+
+        # on initialise le texte du menu ici parcequ'il est suuuuuuper looooong à rendre si on doit le faire à chaque refreshMenu().
+        self.texts = ["Partie Solo", "Partie Duo", "Partie en ligne"]
+        for i in range(3):
+            myfont = pygame.font.SysFont("arial", 15) # une police sympa à proposer ?
+            self.texts[i] = myfont.render(self.texts[i], 1, (i*100,0, 255/(i+1))) # le compteur génere les couleurs :)
 
         self.afficheMenuPricipal()
 
@@ -51,15 +58,63 @@ class Fenetre:
                 elif case == CASE_POINT_EMPTY:
                     self.fenetre.blit(self.fond2, (i * 32, j * 32))
                 elif case == CASE_POINT_GAINED:
-                    pass
-                    #pointIcone
+                    self.fenetre.blit(self.fond2, (i * 32, j * 32))
+                    self.fenetre.blit(self.point, (i * 32, j * 32))
         pygame.display.flip()
 
 
-    def refreshMenu(self, hlBlock):
+    def refreshMenuBackground(self):
 
-        self.fenetre.blit(self.bgmenu, (0,0))
-        pass
+        self.fenetre.blit(self.bgmenu, (0, 0))
+
+        for i in range(3):
+
+            x = (i + 1) * MARGE_BOUTON + i * TAILLE_HORIZONTALE_BOUTON
+            y = HAUTEUR_BOUTON
+            pygame.draw.rect (self.fenetre, (0, 255, 0), Rect(x,y, TAILLE_HORIZONTALE_BOUTON,TAILLE_VERTCALE_BOUTON), 0)
+
+            text = self.texts[i]
+            xt = int((TAILLE_HORIZONTALE_BOUTON - text.get_width()) / 2)
+            yt = int((TAILLE_VERTCALE_BOUTON - text.get_height()) / 2)
+
+            self.fenetre.blit(text, (x + xt, y + yt))
+
+    def refreshMenu(self, hlBlock, oldHlBlock):
+        y1 = HAUTEUR_BOUTON
+        y2 = y1 + TAILLE_VERTCALE_BOUTON
+
+        oldx1 = (oldHlBlock + 1) * MARGE_BOUTON + oldHlBlock * TAILLE_HORIZONTALE_BOUTON
+        oldx2 = oldx1 + TAILLE_HORIZONTALE_BOUTON
+
+        newx1 = (hlBlock + 1) * MARGE_BOUTON + hlBlock * TAILLE_HORIZONTALE_BOUTON
+        newx2 = newx1 + TAILLE_HORIZONTALE_BOUTON
+
+        if(oldx1 < newx1):
+            sens = 1
+        else:
+            sens = -1
+
+        while oldx1 != newx1:
+
+            self.refreshMenuBackground()
+            pygame.draw.lines(self.fenetre, (255,0,0), False, [(oldx1, y1), (oldx2, y1)], 2)
+            pygame.draw.lines(self.fenetre, (0,0,255), False, [(oldx1,y1), (oldx1, y2)], 2)
+            pygame.draw.lines(self.fenetre, (255,0,255), False, [(oldx1,y2), (oldx2, y2)], 2)
+            pygame.draw.lines(self.fenetre, (255,255,0), False, [(oldx2,y1), (oldx2, y2)], 2)
+            oldx1 += sens
+            oldx2 += sens
+            pygame.display.flip()
+
+        # On le fait un dernière fois avec les valeurs finales pour que tout soit bien à la fin, notamment si on a refresh sans changer la place du curseur
+        self.refreshMenuBackground()
+        pygame.draw.lines(self.fenetre, (255,0,0), False, [(newx1, y1), (newx2, y1)], 2)
+        pygame.draw.lines(self.fenetre, (0,0,255), False, [(newx1,y1), (newx1, y2)], 2)
+        pygame.draw.lines(self.fenetre, (255,0,255), False, [(newx1,y2), (newx2, y2)], 2)
+        pygame.draw.lines(self.fenetre, (255,255,0), False, [(newx2,y1), (newx2, y2)], 2)
+        pygame.display.flip()
+
+
+
 
     def afficheMenuPricipal(self):
 
@@ -71,10 +126,10 @@ class Fenetre:
 
         continuer = True
         highlightedBlock = PARTIE_DUO # correspond au type de partie qui sera sélectionné
-        self.refreshMenu(highlightedBlock)
+        oldHighlightedBlock = PARTIE_DUO # pour l'animation
+        self.refreshMenu(highlightedBlock, oldHighlightedBlock)
         while continuer == True:
             for e in pygame.event.get():
-                print(str(highlightedBlock))
                 if e.type == QUIT:
                     self.fermer()
                 if e.type == KEYDOWN:
@@ -84,7 +139,8 @@ class Fenetre:
                         highlightedBlock = (highlightedBlock + 1) % 3
                     if e.key == K_KP_ENTER or e.key == K_RETURN:
                         continuer = False
-                    self.refreshMenu(highlightedBlock)
+                    self.refreshMenu(highlightedBlock, oldHighlightedBlock)
+                    oldHighlightedBlock = highlightedBlock
 
         if highlightedBlock == PARTIE_EN_LIGNE:
             continuer = True
