@@ -4,11 +4,15 @@ from Constantes import *
 from Controlleur import *
 from pygame.locals import *
 import socket
+from queue import Queue
+from EventThread import *
 
 
 class Fenetre:
 
     def __init__(self):
+
+        self.closing = False
 
         pygame.display.set_icon(pygame.image.load("res/kf.png"))
 
@@ -19,6 +23,11 @@ class Fenetre:
         self.isServer = False # utilisé pour déterminer qui commence
 
         self.fenetre = pygame.display.set_mode((LARGEUR_FENETRE, HAUTEUR_FENETRE))
+
+        self.eventQueue = Queue(maxsize=20)
+        self.eventThread = EventThread(self, self.eventQueue)
+        self.eventThread.setDaemon(True)
+        self.eventThread.start()
 
         self.fond1 = pygame.image.load("res/background.png").convert_alpha()
         self.fond2 = pygame.image.load("res/background2.png").convert()
@@ -128,33 +137,24 @@ class Fenetre:
         highlightedBlock = PARTIE_DUO # correspond au type de partie qui sera sélectionné
         oldHighlightedBlock = PARTIE_DUO # pour l'animation
         self.refreshMenu(highlightedBlock, oldHighlightedBlock)
-        while continuer == True:
-            for e in pygame.event.get():
-                if e.type == QUIT:
-                    self.fermer()
-                if e.type == KEYDOWN:
-                    if e.key == K_KP4 or e.key == K_LEFT:
-                        highlightedBlock = (highlightedBlock - 1) % 3
-                    if e.key == K_KP6 or e.key == K_RIGHT:
-                        highlightedBlock = (highlightedBlock + 1) % 3
-                    if e.key == K_KP_ENTER or e.key == K_RETURN:
-                        continuer = False
-                    self.refreshMenu(highlightedBlock, oldHighlightedBlock)
-                    oldHighlightedBlock = highlightedBlock
+        while True:
+            e = self.eventQueue.get()
+            if e.type == KEYDOWN:
+                if e.key == K_KP4 or e.key == K_LEFT:
+                    highlightedBlock = (highlightedBlock - 1) % 3
+                if e.key == K_KP6 or e.key == K_RIGHT:
+                    highlightedBlock = (highlightedBlock + 1) % 3
+                if e.key == K_KP_ENTER or e.key == K_RETURN or e.key == K_z:
+                    break
+                self.refreshMenu(highlightedBlock, oldHighlightedBlock)
+                oldHighlightedBlock = highlightedBlock
+
 
         if highlightedBlock == PARTIE_EN_LIGNE:
-            continuer = True
-            while continuer == True:
-                for e in pygame.event.get():
-                    if e.type == QUIT:
-                        self.fermer()
-                    if e.type == KEYDOWN:
-                        if e.key == K_s:
-                            continuer = False
-                            self.multiServeur()
-                        if e.key == K_c:
-                            continuer = False
-                            self.multiClient()
+            self.afficheMenuMulti()
+
+        if self.closing: #on vérifie qu'on est pas en train de quitter le jeu
+            return
 
         self.lancePartie(highlightedBlock)
 
@@ -166,6 +166,19 @@ class Fenetre:
 
         Controlleur(typePartie, self)
 
+
+    def afficheMenuMulti(self):
+        while True and not self.closing:
+            e = self.eventQueue.get()
+            if e.type == KEYDOWN:
+                if e.key == K_s:
+                    self.multiServeur()
+                    break
+                if e.key == K_c:
+                    self.multiClient()
+                    break
+                if e.key == K_z:
+                    break
 
     def multiServeur(self):
 
@@ -206,12 +219,16 @@ class Fenetre:
 
 
     def fermer(self):
+        self.closing = True
         if self.connexion != None:
             try:
                 self.connexion.send("Z".encode('ascii'))
             except socket.error:
                 pass
             self.connexion.close()
+        if not self.eventThread.closing:
+            self.eventThread.stop()
+        #self.eventThread.join()
         pygame.quit()
         sys.exit()
 

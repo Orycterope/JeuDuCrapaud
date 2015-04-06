@@ -41,7 +41,7 @@ class Controlleur:
         self.plateau[10][10] = CRAPAUD_2
         self.fenetre.refresh(self.plateau)
 
-        while True:
+        while True and not self.fenetre.closing:
             self.faireJouer()
 
 
@@ -55,6 +55,8 @@ class Controlleur:
         hasPlayed = False
         while hasPlayed != True:
             moveAttemptLetter = self.tourPlayer.waitForPlay()
+            if moveAttemptLetter == "Z":
+                return
             moveAttempt = MOVECODE[moveAttemptLetter]
             if self.checkMoveAllowed(moveAttempt) == True:
                 self.move(self.tour, moveAttempt[0], moveAttempt[1])
