@@ -2,6 +2,7 @@ __author__ = 'thomas'
 import pygame
 import sys
 from pygame.locals import *
+import time
 
 class PlayerLocal:
     
@@ -11,11 +12,13 @@ class PlayerLocal:
     
     def waitForPlay(self):
 
+        timedebut = time.time()
         continuer = True
         pygame.event.clear()
         while continuer:
             for event in pygame.event.get():
-
+                if time.time() < timedebut + 0.1: #On laisse un 10e de seconde pour etre sûr de pas récupérer les events du tour d'avant pcq pygame est pas synchrone
+                    continue
                 if event.type == QUIT:
                    self.controlleur.fenetre.fermer()
                 elif event.type == KEYDOWN:
