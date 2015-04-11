@@ -45,12 +45,6 @@ class Controlleur:
             self.faireJouer()
 
 
-    def getCoordCrapaud(self, crapaud):
-        for i in range(LARGEUR_PLATEAU):
-            for j in range(HAUTEUR_PLATEAU):
-                if self.plateau[i][j] == crapaud:
-                    return [i, j]
-
     def faireJouer(self):
         hasPlayed = False
         while hasPlayed != True:
@@ -64,20 +58,6 @@ class Controlleur:
                 hasPlayed = True
         self.changeTour()
 
-    def informOtherPlayer(self, lettre):
-        if self.tour == CRAPAUD_1:
-            self.joueur2.informMove(lettre)
-        else:
-            self.joueur1.informMove(lettre)
-
-    def changeTour(self):
-        if self.tour == CRAPAUD_1:
-            self.tourPlayer = self.joueur2
-            self.tour = CRAPAUD_2
-        else:
-            self.tourPlayer = self.joueur1
-            self.tour = CRAPAUD_1
-
     def move(self, crapaud, dx, dy):
 
         coord = self.getCoordCrapaud(crapaud)
@@ -85,6 +65,12 @@ class Controlleur:
         self.plateau[coord[0]+dx][coord[1]+dy] = crapaud
         self.fenetre.refresh(self.plateau)
 
+    def getCoordCrapaud(self, crapaud):
+
+        for i in range(LARGEUR_PLATEAU):
+            for j in range(HAUTEUR_PLATEAU):
+                if self.plateau[i][j] == crapaud:
+                    return [i, j]
 
     def checkMoveAllowed(self, moveAttempt):
         dx = moveAttempt[0]
@@ -104,3 +90,17 @@ class Controlleur:
             return False
 
         return True
+
+    def changeTour(self):
+        if self.tour == CRAPAUD_1:
+            self.tourPlayer = self.joueur2
+            self.tour = CRAPAUD_2
+        else:
+            self.tourPlayer = self.joueur1
+            self.tour = CRAPAUD_1
+
+    def informOtherPlayer(self, lettre):
+        if self.tour == CRAPAUD_1:
+            self.joueur2.informMove(lettre)
+        else:
+            self.joueur1.informMove(lettre)

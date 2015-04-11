@@ -48,30 +48,40 @@ class Fenetre:
         self.afficheMenuPricipal()
 
 
-    def refresh(self, plateau):
+    def afficheMenuPricipal(self):
 
-        for i in range(LARGEUR_PLATEAU):
-            for j in range(HAUTEUR_PLATEAU):
-                case = plateau[i][j]
-                if case == CASE_MOUVEMENT:
-                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
-                elif case == CASE_BAVE:
-                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
-                    self.fenetre.blit(self.bave, (i * 32, j * 32))
-                elif case == CRAPAUD_1:
-                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
-                    self.fenetre.blit(self.perso1,(i * 32, j * 32))
-                elif case == CRAPAUD_2:
-                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
-                    self.fenetre.blit(self.perso2,(i * 32, j * 32))
-                elif case == CASE_POINT_EMPTY:
-                    self.fenetre.blit(self.fond2, (i * 32, j * 32))
-                elif case == CASE_POINT_GAINED:
-                    self.fenetre.blit(self.fond2, (i * 32, j * 32))
-                    self.fenetre.blit(self.point, (i * 32, j * 32))
-        pygame.display.flip()
+        pygame.mixer.music.load("res/alex-f.mp3") # Menu le plus electro au monde xD
+        pygame.mixer.music.set_volume(0.6) # Sinon les oreilles saignent
+        pygame.mixer.music.play(-1)
 
 
+
+        continuer = True
+        highlightedBlock = PARTIE_DUO # correspond au type de partie qui sera sélectionné
+        oldHighlightedBlock = PARTIE_DUO # pour l'animation
+        self.refreshMenu(highlightedBlock, oldHighlightedBlock)
+        while True:
+            e = self.eventQueue.get()
+            if e.type == KEYDOWN:
+                if e.key == K_KP4 or e.key == K_LEFT:
+                    highlightedBlock = (highlightedBlock - 1) % 3
+                if e.key == K_KP6 or e.key == K_RIGHT:
+                    highlightedBlock = (highlightedBlock + 1) % 3
+                if e.key == K_KP_ENTER or e.key == K_RETURN or e.key == K_z:
+                    break
+                self.refreshMenu(highlightedBlock, oldHighlightedBlock)
+                oldHighlightedBlock = highlightedBlock
+
+
+        if highlightedBlock == PARTIE_EN_LIGNE:
+            self.afficheMenuMulti()
+
+        if self.closing: #on vérifie qu'on est pas en train de quitter le jeu
+            return
+
+        self.lancePartie(highlightedBlock)
+    
+    
     def refreshMenuBackground(self):
 
         self.fenetre.blit(self.bgmenu, (0, 0))
@@ -121,66 +131,22 @@ class Fenetre:
         pygame.draw.lines(self.fenetre, (255,0,255), False, [(newx1,y2), (newx2, y2)], 2)
         pygame.draw.lines(self.fenetre, (255,255,0), False, [(newx2,y1), (newx2, y2)], 2)
         pygame.display.flip()
-
-
-
-
-    def afficheMenuPricipal(self):
-
-        pygame.mixer.music.load("res/alex-f.mp3") # Menu le plus electro au monde xD
-        pygame.mixer.music.set_volume(0.6) # Sinon les oreilles saignent
-        pygame.mixer.music.play(-1)
-
-
-
-        continuer = True
-        highlightedBlock = PARTIE_DUO # correspond au type de partie qui sera sélectionné
-        oldHighlightedBlock = PARTIE_DUO # pour l'animation
-        self.refreshMenu(highlightedBlock, oldHighlightedBlock)
-        while True:
-            e = self.eventQueue.get()
-            if e.type == KEYDOWN:
-                if e.key == K_KP4 or e.key == K_LEFT:
-                    highlightedBlock = (highlightedBlock - 1) % 3
-                if e.key == K_KP6 or e.key == K_RIGHT:
-                    highlightedBlock = (highlightedBlock + 1) % 3
-                if e.key == K_KP_ENTER or e.key == K_RETURN or e.key == K_z:
-                    break
-                self.refreshMenu(highlightedBlock, oldHighlightedBlock)
-                oldHighlightedBlock = highlightedBlock
-
-
-        if highlightedBlock == PARTIE_EN_LIGNE:
-            self.afficheMenuMulti()
-
-        if self.closing: #on vérifie qu'on est pas en train de quitter le jeu
-            return
-
-        self.lancePartie(highlightedBlock)
-
-    def lancePartie(self, typePartie):
-
-        pygame.mixer.music.load("res/popcorn.mp3")
-        pygame.mixer.music.set_volume(1) # on remet le volume à donf
-        pygame.mixer.music.play(-1) # param -1 fait répéter à l'infini.
-
-        Controlleur(typePartie, self)
-
-
+    
+    
     def afficheMenuMulti(self):
         while True and not self.closing:
             e = self.eventQueue.get()
             if e.type == KEYDOWN:
                 if e.key == K_s:
-                    self.multiServeur()
+                    self.multiInitServeur()
                     break
                 if e.key == K_c:
-                    self.multiClient()
+                    self.multiInitClient()
                     break
                 if e.key == K_z:
                     break
 
-    def multiServeur(self):
+    def multiInitServeur(self):
 
         self.isServer = True
         HOST = '192.168.1.28'
@@ -202,7 +168,7 @@ class Fenetre:
         self.connexion, adresse = mySocket.accept()
         print("Client connecté, adresse IP %s, port %s" % (adresse[0], adresse[1]))
 
-    def multiClient(self):
+    def multiInitClient(self):
 
         HOST = '192.168.1.28'
 
@@ -216,6 +182,40 @@ class Fenetre:
             print("La connexion a échoué.")
             self.fermer()
         print("Connexion établie avec le serveur.")
+    
+    
+    def lancePartie(self, typePartie):
+
+        pygame.mixer.music.load("res/popcorn.mp3")
+        pygame.mixer.music.set_volume(1) # on remet le volume à donf
+        pygame.mixer.music.play(-1) # param -1 fait répéter à l'infini.
+
+        Controlleur(typePartie, self)
+
+
+    def refresh(self, plateau):
+
+        for i in range(LARGEUR_PLATEAU):
+            for j in range(HAUTEUR_PLATEAU):
+                case = plateau[i][j]
+                if case == CASE_MOUVEMENT:
+                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
+                elif case == CASE_BAVE:
+                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
+                    self.fenetre.blit(self.bave, (i * 32, j * 32))
+                elif case == CRAPAUD_1:
+                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
+                    self.fenetre.blit(self.perso1,(i * 32, j * 32))
+                elif case == CRAPAUD_2:
+                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
+                    self.fenetre.blit(self.perso2,(i * 32, j * 32))
+                elif case == CASE_POINT_EMPTY:
+                    self.fenetre.blit(self.fond2, (i * 32, j * 32))
+                elif case == CASE_POINT_GAINED:
+                    self.fenetre.blit(self.fond2, (i * 32, j * 32))
+                    self.fenetre.blit(self.point, (i * 32, j * 32))
+        pygame.display.flip()
+
 
 
     def fermer(self):
@@ -236,4 +236,5 @@ class Fenetre:
 
 
 #Main
+
 fen = Fenetre()
