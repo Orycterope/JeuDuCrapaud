@@ -40,11 +40,13 @@ class Fenetre:
         self.position_perso2 = self.perso2.get_rect()
 
         # on initialise le texte du menu ici parcequ'il est suuuuuuper looooong à rendre si on doit le faire à chaque refreshMenu().
-        self.texts = ["Partie Solo", "Partie Duo", "Partie en ligne"]
-        for i in range(3):
+        self.texts = ["Partie Solo", "Partie Duo", "Partie en ligne", "Appuyez sur :", "S serveur", "C client", "En attente de client ..."]
+        for i in range(len(self.texts)):
             myfont = pygame.font.SysFont("arial", 15) # une police sympa à proposer ?
-            self.texts[i] = myfont.render(self.texts[i], 1, (i*100,0, 255/(i+1))) # le compteur génere les couleurs :)
-
+            if i < 3:
+                self.texts[i] = myfont.render(self.texts[i], 1, (i*100,0, 255/(i+1))) # le compteur génere les couleurs :)
+            else:
+                self.texts[i] = myfont.render(self.texts[i], 1, (0, 255, 0))
         self.afficheMenuPricipal()
 
 
@@ -134,6 +136,11 @@ class Fenetre:
     
     
     def afficheMenuMulti(self):
+        self.fenetre.blit(self.bgmenu, (0,0))
+        self.fenetre.blit(self.texts[3], (LARGEUR_FENETRE//2 - self.texts[3].get_width()//2, HAUTEUR_FENETRE//3))
+        self.fenetre.blit(self.texts[4], (LARGEUR_FENETRE//3 - self.texts[4].get_width()//2, HAUTEUR_FENETRE//3+TAILLE_VERTCALE_BOUTON))
+        self.fenetre.blit(self.texts[5], (2*LARGEUR_FENETRE//3 - self.texts[5].get_width()//2, HAUTEUR_FENETRE//3+TAILLE_VERTCALE_BOUTON))
+        pygame.display.flip()
         while True and not self.closing:
             e = self.eventQueue.get()
             if e.type == KEYDOWN:
@@ -147,6 +154,9 @@ class Fenetre:
                     break
 
     def multiInitServeur(self):
+
+        self.fenetre.blit(self.texts[6], (LARGEUR_FENETRE//2 - self.texts[6].get_width()//2, HAUTEUR_FENETRE//3+3*TAILLE_VERTCALE_BOUTON))
+        pygame.display.flip()
 
         self.isServer = True
         HOST = '192.168.1.28'
