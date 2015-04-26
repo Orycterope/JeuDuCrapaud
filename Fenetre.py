@@ -62,17 +62,21 @@ class Fenetre:
         highlightedBlock = PARTIE_DUO # correspond au type de partie qui sera sélectionné
         oldHighlightedBlock = PARTIE_DUO # pour l'animation
         self.refreshMenu(highlightedBlock, oldHighlightedBlock)
-        while True:
-            e = self.eventQueue.get()
-            if e.type == KEYDOWN:
-                if e.key == K_KP4 or e.key == K_LEFT:
-                    highlightedBlock = (highlightedBlock - 1) % 3
-                if e.key == K_KP6 or e.key == K_RIGHT:
-                    highlightedBlock = (highlightedBlock + 1) % 3
-                if e.key == K_KP_ENTER or e.key == K_RETURN or e.key == K_z:
-                    break
-                self.refreshMenu(highlightedBlock, oldHighlightedBlock)
-                oldHighlightedBlock = highlightedBlock
+        while continuer:
+            for e in pygame.event.get():
+                if e.type == QUIT:
+                    continuer = False
+                    sys.exit()
+                if e.type == KEYDOWN:
+                    if e.key == K_KP4 or e.key == K_LEFT:
+                        highlightedBlock = (highlightedBlock - 1) % 3
+                    if e.key == K_KP6 or e.key == K_RIGHT:
+                        highlightedBlock = (highlightedBlock + 1) % 3
+                    if e.key == K_KP_ENTER or e.key == K_RETURN or e.key == K_z:
+                        continuer = False
+                        break
+                    self.refreshMenu(highlightedBlock, oldHighlightedBlock)
+                    oldHighlightedBlock = highlightedBlock
 
 
         if highlightedBlock == PARTIE_EN_LIGNE:
