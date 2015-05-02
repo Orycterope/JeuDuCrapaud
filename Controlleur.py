@@ -11,6 +11,7 @@ class Controlleur:
         self.typeDePartie = typeDePartie
         self.fenetre = fenetre
         self.plateau = [None] * LARGEUR_PLATEAU
+        self.end = False
 
         for i in range(0, LARGEUR_PLATEAU):
             self.plateau[i] = [None] * HAUTEUR_PLATEAU
@@ -41,11 +42,17 @@ class Controlleur:
         self.plateau[10][10] = CRAPAUD_2
         self.fenetre.refresh(self.plateau)
 
-        while True and not self.fenetre.closing:
+        while not self.end:
+            if self.fenetre.closing:
+                return
             self.faireJouer()
+        
+        fenetre.afficheMenuVictoire(self.tour)
 
 
     def faireJouer(self):
+        if self.checkLose():
+            return
         hasPlayed = False
         while hasPlayed != True:
             moveAttemptLetter = self.tourPlayer.waitForPlay()
@@ -56,6 +63,8 @@ class Controlleur:
                 self.move(self.tour, moveAttempt[0], moveAttempt[1])
                 self.informOtherPlayer(moveAttemptLetter)
                 hasPlayed = True
+                if self.checkLose():
+                    return
         self.changeTour()
 
     def move(self, crapaud, dx, dy):
@@ -104,3 +113,17 @@ class Controlleur:
             self.joueur2.informMove(lettre)
         else:
             self.joueur1.informMove(lettre)
+    
+    def canMove(self):
+        for move in MOVECODE.values():
+            if self.checkMoveAllowed(move):
+                return True
+        return False
+    
+    def checkLose(self):
+        if self.canMove() == False:
+            print(self.tour, "a perdu!")
+            self.end = True
+            return True
+        return False
+                

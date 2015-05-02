@@ -23,23 +23,31 @@ class Fenetre:
 
         self.fenetre = pygame.display.set_mode((LARGEUR_FENETRE, HAUTEUR_FENETRE))
 
-        self.fond1 = pygame.image.load("res/background.png").convert_alpha()
-        self.fond2 = pygame.image.load("res/background2.png").convert()
+        self.fond1 = pygame.image.load("res/fond1.png").convert_alpha()
+        self.fond2 = pygame.image.load("res/fond2.png").convert_alpha()
         self.perso1 = pygame.image.load("res/perso.png").convert_alpha()
         self.perso2 = pygame.image.load("res/perso2.png").convert_alpha()
+        self.victoire1 = pygame.image.load("res/victoirejaune.png").convert_alpha()
+        self.victoire2 = pygame.image.load("res/victoirerouge.png").convert_alpha()
         self.bave = pygame.image.load("res/goutte.png").convert_alpha()
         self.point = pygame.image.load("res/point.png").convert_alpha()
         self.bgmenu = pygame.image.load("res/bgmenu.png").convert_alpha()
+        self.bgvictoire = pygame.Surface(self.fenetre.get_size()).convert()
+        self.bgvictoire.fill((0, 0, 0))
         self.position_perso1 = self.perso1.get_rect()
         self.position_perso2 = self.perso2.get_rect()
 
         # on initialise le texte du menu ici parcequ'il est suuuuuuper looooong à rendre si on doit le faire à chaque refreshMenu().
-        self.texts = ["Partie Solo", "Partie Duo", "Partie en ligne", "Appuyez sur :", "S serveur", "C client", "En attente de client ..."]
+        self.texts = ["Partie Solo", "Partie Duo", "Partie en ligne", "Appuyez sur :", "S serveur", "C client", "En attente de client ...", "Crapaud Jaune a gagné!", "Crapaud Rouge a gagné!"]
         for i in range(len(self.texts)):
-            myfont = pygame.font.SysFont("arial", 15) # une police sympa à proposer ?
             if i < 3:
+                myfont = pygame.font.SysFont("arial", 15) # une police sympa à proposer ?
                 self.texts[i] = myfont.render(self.texts[i], 1, (i*100,0, 255/(i+1))) # le compteur génere les couleurs :)
+            elif i > 6:
+                myfont = pygame.font.SysFont("arial", 15)
+                self.texts[i] = myfont.render(self.texts[i], 1, (255, 255, 255))
             else:
+                myfont = pygame.font.SysFont("arial", 20)
                 self.texts[i] = myfont.render(self.texts[i], 1, (0, 255, 0))
         self.afficheMenuPricipal()
 
@@ -210,23 +218,41 @@ class Fenetre:
             for j in range(HAUTEUR_PLATEAU):
                 case = plateau[i][j]
                 if case == CASE_MOUVEMENT:
-                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
+                    self.fenetre.blit(self.fond1, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
                 elif case == CASE_BAVE:
-                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
-                    self.fenetre.blit(self.bave, (i * 32, j * 32))
+                    self.fenetre.blit(self.fond1, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
+                    self.fenetre.blit(self.bave, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
                 elif case == CRAPAUD_1:
-                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
-                    self.fenetre.blit(self.perso1,(i * 32, j * 32))
+                    self.fenetre.blit(self.fond1, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
+                    self.fenetre.blit(self.perso1,(i * LARGEUR_CASE, j * HAUTEUR_CASE))
                 elif case == CRAPAUD_2:
-                    self.fenetre.blit(self.fond1, (i * 32, j * 32))
-                    self.fenetre.blit(self.perso2,(i * 32, j * 32))
+                    self.fenetre.blit(self.fond1, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
+                    self.fenetre.blit(self.perso2,(i * LARGEUR_CASE, j * HAUTEUR_CASE))
                 elif case == CASE_POINT_EMPTY:
-                    self.fenetre.blit(self.fond2, (i * 32, j * 32))
+                    self.fenetre.blit(self.fond2, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
                 elif case == CASE_POINT_GAINED:
-                    self.fenetre.blit(self.fond2, (i * 32, j * 32))
-                    self.fenetre.blit(self.point, (i * 32, j * 32))
+                    self.fenetre.blit(self.fond2, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
+                    self.fenetre.blit(self.point, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
         pygame.display.flip()
 
+
+    def afficheMenuVictoire(self, perdant):
+        self.fenetre.blit(self.bgvictoire, (0,0))
+        if perdant == CRAPAUD_1:
+            texte = self.texts[8]
+            victoire = self.victoire2
+        else:
+            texte = self.texts[7]
+            victoire = self.victoire1
+        self.fenetre.blit(texte, (LARGEUR_FENETRE//2 - texte.get_width()//2, HAUTEUR_FENETRE//6))
+        self.fenetre.blit(victoire, (LARGEUR_FENETRE//2 - victoire.get_width()//2, HAUTEUR_FENETRE//1.5 - victoire.get_height()//2))
+        pygame.display.flip()
+        continuer = True
+        while continuer and not self.closing:
+            for e in pygame.event.get():
+                if e.type == KEYDOWN:
+                    if e.key == K_KP_ENTER or e.key == K_RETURN or e.key == K_z:
+                        continuer = False
 
 
     def fermer(self):
