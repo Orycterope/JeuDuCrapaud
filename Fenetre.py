@@ -5,7 +5,6 @@ from Controlleur import *
 from pygame.locals import *
 import socket
 from queue import Queue
-from EventThread import *
 
 
 class Fenetre:
@@ -23,11 +22,6 @@ class Fenetre:
         self.isServer = False # utilisé pour déterminer qui commence
 
         self.fenetre = pygame.display.set_mode((LARGEUR_FENETRE, HAUTEUR_FENETRE))
-
-        self.eventQueue = Queue(maxsize=20)
-        self.eventThread = EventThread(self, self.eventQueue)
-        self.eventThread.setDaemon(True)
-        self.eventThread.start()
 
         self.fond1 = pygame.image.load("res/background.png").convert_alpha()
         self.fond2 = pygame.image.load("res/background2.png").convert()
@@ -145,17 +139,20 @@ class Fenetre:
         self.fenetre.blit(self.texts[4], (LARGEUR_FENETRE//3 - self.texts[4].get_width()//2, HAUTEUR_FENETRE//3+TAILLE_VERTCALE_BOUTON))
         self.fenetre.blit(self.texts[5], (2*LARGEUR_FENETRE//3 - self.texts[5].get_width()//2, HAUTEUR_FENETRE//3+TAILLE_VERTCALE_BOUTON))
         pygame.display.flip()
-        while True and not self.closing:
-            e = self.eventQueue.get()
-            if e.type == KEYDOWN:
-                if e.key == K_s:
-                    self.multiInitServeur()
-                    break
-                if e.key == K_c:
-                    self.multiInitClient()
-                    break
-                if e.key == K_z:
-                    break
+        continuer = True
+        while continuer and not self.closing:
+            for e in pygame.event.get():
+                if e.type == KEYDOWN:
+                    if e.key == K_s:
+                        self.multiInitServeur()
+                        continuer = False
+                        break
+                    if e.key == K_c:
+                        self.multiInitClient()
+                        continuer = False
+                        break
+                    if e.key == K_z:
+                        break
 
     def multiInitServeur(self):
 
@@ -163,7 +160,7 @@ class Fenetre:
         pygame.display.flip()
 
         self.isServer = True
-        HOST = '192.168.1.28'
+        HOST = '127.0.0.1'
 
         # 1) création du socket :
         mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -184,7 +181,7 @@ class Fenetre:
 
     def multiInitClient(self):
 
-        HOST = '192.168.1.28'
+        HOST = '127.0.0.1'
 
         # 1) création du socket :
         self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
