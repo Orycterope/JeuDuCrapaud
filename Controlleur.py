@@ -2,6 +2,7 @@ __author__ = 'thomas'
 
 import PlayerLocal
 import PlayerDistant
+import PlayerIA
 from Constantes import *
 
 class Controlleur:
@@ -33,7 +34,8 @@ class Controlleur:
                 self.joueur2 = PlayerLocal.PlayerLocal(self)
                 self.joueur1 = PlayerDistant.PlayerDistant(self, self.fenetre.connexion)
         else:
-            pass
+            self.joueur1 = PlayerLocal.PlayerLocal(self)
+            self.joueur2 = PlayerIA.PlayerIA(self)
 
         self.tour = CRAPAUD_1
         self.tourPlayer = self.joueur1
@@ -113,16 +115,21 @@ class Controlleur:
             self.joueur2.informMove(lettre)
         else:
             self.joueur1.informMove(lettre)
+            
+    def listMoves(self):
+        moves = list()
+        
+        for letter, move in MOVECODE.items():
+            if self.checkMoveAllowed(move):
+                moves.append(letter)
+            
+        return moves
     
     def canMove(self):
-        for move in MOVECODE.values():
-            if self.checkMoveAllowed(move):
-                return True
-        return False
+        return len(self.listMoves()) != 0
     
     def checkLose(self):
         if self.canMove() == False:
-            print(self.tour, "a perdu!")
             self.end = True
             return True
         return False

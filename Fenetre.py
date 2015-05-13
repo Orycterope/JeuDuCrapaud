@@ -38,7 +38,8 @@ class Fenetre:
         self.position_perso2 = self.perso2.get_rect()
 
         # on initialise le texte du menu ici parcequ'il est suuuuuuper looooong à rendre si on doit le faire à chaque refreshMenu().
-        self.texts = ["Partie Solo", "Partie Duo", "Partie en ligne", "Appuyez sur :", "S serveur", "C client", "En attente de client ...", "Crapaud Jaune a gagné!", "Crapaud Rouge a gagné!"]
+        self.texts = ["Partie Solo", "Partie Duo", "Partie en ligne", "Appuyez sur :", "S serveur", "C client", "En attente de client ...",
+                      "Crapaud Jaune a gagné!", "Crapaud Rouge a gagné!", "Faites Entrée pour revenie au menu principal"]
         for i in range(len(self.texts)):
             if i < 3:
                 myfont = pygame.font.SysFont("arial", 15) # une police sympa à proposer ?
@@ -79,6 +80,10 @@ class Fenetre:
                         break
                     self.refreshMenu(highlightedBlock, oldHighlightedBlock)
                     oldHighlightedBlock = highlightedBlock
+                if e.type == MOUSEBUTTONDOWN:
+                    if e.button == 1:
+                        perso_x = e.pos[0]
+                        perso_y = e.pos[1]
 
 
         if highlightedBlock == PARTIE_EN_LIGNE:
@@ -245,6 +250,7 @@ class Fenetre:
             texte = self.texts[7]
             victoire = self.victoire1
         self.fenetre.blit(texte, (LARGEUR_FENETRE//2 - texte.get_width()//2, HAUTEUR_FENETRE//6))
+        self.fenetre.blit(self.texts[9], (LARGEUR_FENETRE//2 - self.texts[9].get_width()//2, HAUTEUR_FENETRE//3))
         self.fenetre.blit(victoire, (LARGEUR_FENETRE//2 - victoire.get_width()//2, HAUTEUR_FENETRE//1.5 - victoire.get_height()//2))
         pygame.display.flip()
         continuer = True
@@ -253,6 +259,7 @@ class Fenetre:
                 if e.type == KEYDOWN:
                     if e.key == K_KP_ENTER or e.key == K_RETURN or e.key == K_z:
                         continuer = False
+                        self.afficheMenuPricipal()
 
 
     def fermer(self):
@@ -263,9 +270,6 @@ class Fenetre:
             except socket.error:
                 pass
             self.connexion.close()
-        if not self.eventThread.closing:
-            self.eventThread.stop()
-        #self.eventThread.join()
         pygame.quit()
         sys.exit()
 
