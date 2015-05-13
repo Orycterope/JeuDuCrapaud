@@ -80,11 +80,27 @@ class Fenetre:
                         break
                     self.refreshMenu(highlightedBlock, oldHighlightedBlock)
                     oldHighlightedBlock = highlightedBlock
+                if e.type == MOUSEMOTION:
+                    x = e.pos[0]
+                    y = e.pos[1]
+                    
+                    newHighlightedBlock = self.getHighlightedBlock(x, y)
+                        
+                    if newHighlightedBlock != None:
+                        highlightedBlock = newHighlightedBlock
+                        self.refreshMenu(highlightedBlock, oldHighlightedBlock)
+                        oldHighlightedBlock = highlightedBlock
                 if e.type == MOUSEBUTTONDOWN:
                     if e.button == 1:
-                        perso_x = e.pos[0]
-                        perso_y = e.pos[1]
-
+                        x = e.pos[0]
+                        y = e.pos[1]
+                    
+                        newHighlightedBlock = self.getHighlightedBlock(x, y)
+                        
+                        if newHighlightedBlock != None:
+                            highlightedBlock = newHighlightedBlock
+                            continuer = False
+                            break
 
         if highlightedBlock == PARTIE_EN_LIGNE:
             self.afficheMenuMulti()
@@ -94,6 +110,17 @@ class Fenetre:
 
         self.lancePartie(highlightedBlock)
     
+    def getHighlightedBlock(self, x, y):
+        for i in range(3):
+            x_min = (i + 1) * MARGE_BOUTON + i * TAILLE_HORIZONTALE_BOUTON
+            y_min = HAUTEUR_BOUTON
+            x_max = x_min + TAILLE_HORIZONTALE_BOUTON
+            y_max = y_min + TAILLE_VERTCALE_BOUTON
+            
+            if x_min <= x <= x_max and y_min <= y <= y_max:
+                return i
+            
+        return None
     
     def refreshMenuBackground(self):
 
