@@ -5,6 +5,7 @@ from Controlleur import *
 from pygame.locals import *
 import socket
 from queue import Queue
+import time
 
 
 class Fenetre:
@@ -29,9 +30,11 @@ class Fenetre:
         self.perso2 = pygame.image.load("res/perso2.png").convert_alpha()
         self.victoire1 = pygame.image.load("res/victoirejaune.png").convert_alpha()
         self.victoire2 = pygame.image.load("res/victoirerouge.png").convert_alpha()
-        self.bave = pygame.image.load("res/goutte.png").convert_alpha()
-        self.point = pygame.image.load("res/point.png").convert_alpha()
+        self.bave1 = pygame.image.load("res/bave1.png").convert_alpha()
+        self.bave2 = pygame.image.load("res/bave2.png").convert_alpha()
         self.bgmenu = pygame.image.load("res/bgmenu.png").convert_alpha()
+        self.bomb = pygame.image.load("res/bomb.png").convert_alpha()
+        self.bomb.fill((255, 255, 255, 128), None, pygame.BLEND_RGBA_MULT)
         self.bgvictoire = pygame.Surface(self.fenetre.get_size()).convert()
         self.bgvictoire.fill((0, 0, 0))
         self.position_perso1 = self.perso1.get_rect()
@@ -57,7 +60,7 @@ class Fenetre:
 
         pygame.mixer.music.load("res/alex-f.mp3") # Menu le plus electro au monde xD
         pygame.mixer.music.set_volume(0.6) # Sinon les oreilles saignent
-        pygame.mixer.music.play(-1)
+        #pygame.mixer.music.play(-1)
 
 
 
@@ -239,7 +242,7 @@ class Fenetre:
 
         pygame.mixer.music.load("res/popcorn.mp3")
         pygame.mixer.music.set_volume(1) # on remet le volume à donf
-        pygame.mixer.music.play(-1) # param -1 fait répéter à l'infini.
+        #pygame.mixer.music.play(-1) # param -1 fait répéter à l'infini.
 
         Controlleur(typePartie, self)
 
@@ -251,22 +254,40 @@ class Fenetre:
                 case = plateau[i][j]
                 if case == CASE_MOUVEMENT:
                     self.fenetre.blit(self.fond1, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
-                elif case == CASE_BAVE:
+                elif case == CASE_BAVE_1:
                     self.fenetre.blit(self.fond1, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
-                    self.fenetre.blit(self.bave, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
+                    self.fenetre.blit(self.bave1, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
+                elif case == CASE_BAVE_2:
+                    self.fenetre.blit(self.fond1, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
+                    self.fenetre.blit(self.bave2, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
                 elif case == CRAPAUD_1:
                     self.fenetre.blit(self.fond1, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
                     self.fenetre.blit(self.perso1,(i * LARGEUR_CASE, j * HAUTEUR_CASE))
                 elif case == CRAPAUD_2:
                     self.fenetre.blit(self.fond1, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
                     self.fenetre.blit(self.perso2,(i * LARGEUR_CASE, j * HAUTEUR_CASE))
-                elif case == CASE_POINT_EMPTY:
+                elif case == CASE_BOMB_EMPTY or case == CASE_BOMB:
                     self.fenetre.blit(self.fond2, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
-                elif case == CASE_POINT_GAINED:
-                    self.fenetre.blit(self.fond2, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
-                    self.fenetre.blit(self.point, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
         pygame.display.flip()
 
+
+    def displayBombPosition(self, plateau):
+
+        for i in range(LARGEUR_PLATEAU):
+            for j in range(HAUTEUR_PLATEAU):
+                case = plateau[i][j]
+                if case == CASE_MOUVEMENT or case == CRAPAUD_1 or case == CRAPAUD_2 or case == CASE_BAVE_1 or case == CASE_BAVE_2:
+                    self.fenetre.blit(self.fond1, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
+                elif case == CASE_BOMB_EMPTY or case == CASE_BOMB:
+                    self.fenetre.blit(self.fond2, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
+                if case == CASE_BOMB:
+                    self.fenetre.blit(self.bomb, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
+        pygame.display.flip()
+
+        #On attend 5 secondes :
+        timeStart = time.time()
+        while time.time() < timeStart + 5:
+            pass
 
     def afficheMenuVictoire(self, perdant):
         self.fenetre.blit(self.bgvictoire, (0,0))

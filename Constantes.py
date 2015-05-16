@@ -4,6 +4,9 @@ PARTIE_EN_LIGNE = 2
 
 PORT = 4545
 
+SPAWN_1 = [0, 0]
+SPAWN_2 = [10, 10]
+
 LARGEUR_PLATEAU = 18
 HAUTEUR_PLATEAU = 13
 
@@ -22,9 +25,12 @@ CRAPAUD_1 = "Crapaud Jaune"
 CRAPAUD_2 = "Crapaud Rouge"
 
 CASE_MOUVEMENT = "M"
-CASE_POINT_EMPTY = "P"
+CASE_BOMB_EMPTY = "P"
 CASE_POINT_GAINED = "G"
-CASE_BAVE = "B"
+CASE_BAVE_1 = "K"
+CASE_BAVE_2 = "L"
 CASE_CRAPAUD = "C"
+CASE_BOMB = "O" # c'est un o comme Opéra, pas un zéro
 
 MOVECODE = {'A': [0,-2], 'B': [1,-1], 'C': [2,0], 'D': [1,1], 'E': [0,2], 'F': [-1,1], 'G': [-2,0], 'H': [-1,-1]}
+CRAPAUD_DIED = "X"

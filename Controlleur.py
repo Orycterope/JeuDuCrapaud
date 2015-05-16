@@ -4,6 +4,7 @@ import PlayerLocal
 import PlayerDistant
 import PlayerIA
 from Constantes import *
+from random import randint
 
 class Controlleur:
 
@@ -20,8 +21,7 @@ class Controlleur:
                 if (i + j) % 2 == 0:
                     self.plateau[i][j] = CASE_MOUVEMENT
                 else:
-                    self.plateau[i][j] = CASE_POINT_EMPTY
-
+                    self.plateau[i][j] = CASE_BOMB_EMPTY
 
         if typeDePartie == PARTIE_DUO:
             self.joueur1 = PlayerLocal.PlayerLocal(self)
@@ -40,8 +40,20 @@ class Controlleur:
         self.tour = CRAPAUD_1
         self.tourPlayer = self.joueur1
 
-        self.plateau[0][0] = CRAPAUD_1
-        self.plateau[10][10] = CRAPAUD_2
+        self.plateau[SPAWN_1[0]][SPAWN_1[1]] = CRAPAUD_1
+        self.plateau[SPAWN_2[0]][SPAWN_2[1]] = CRAPAUD_2
+
+        #on crée les bombes
+        bombcount = 0
+        while bombcount < 5:
+            for i in range(0, LARGEUR_PLATEAU):
+                for j in range(0, HAUTEUR_PLATEAU):
+                    if self.plateau[i][j] == CASE_BOMB_EMPTY:
+                        if randint(1, 100) == 42:
+                            self.plateau[i][j] = CASE_BOMB
+                            bombcount +=1
+
+        self.fenetre.displayBombPosition(self.plateau)
         self.fenetre.refresh(self.plateau)
 
         while not self.end:
@@ -60,19 +72,30 @@ class Controlleur:
             moveAttemptLetter = self.tourPlayer.waitForPlay()
             if moveAttemptLetter == "Z":
                 return
-            moveAttempt = MOVECODE[moveAttemptLetter]
-            if self.checkMoveAllowed(moveAttempt) == True:
-                self.move(self.tour, moveAttempt[0], moveAttempt[1])
-                self.informOtherPlayer(moveAttemptLetter)
-                hasPlayed = True
-                if self.checkLose():
-                    return
+            if moveAttemptLetter == CRAPAUD_DIED:
+                self.kill(self.tour)
+            else:
+                moveAttempt = MOVECODE[moveAttemptLetter]
+                if self.checkMoveAllowed(moveAttempt) == True:
+                    self.move(self.tour, moveAttempt[0], moveAttempt[1])
+                    if self.isNextToBomb(self.tour) != False:
+                        self.kill(self.tour, self.isNextToBomb(self.tour))
+                        self.informOtherPlayer(CRAPAUD_DIED)
+                    else:
+                        self.informOtherPlayer(moveAttemptLetter)
+                    hasPlayed = True
+                    if self.checkLose():
+                        return
         self.changeTour()
 
     def move(self, crapaud, dx, dy):
 
         coord = self.getCoordCrapaud(crapaud)
-        self.plateau[coord[0]][coord[1]] = CASE_BAVE
+
+        if crapaud == CRAPAUD_1:
+            self.plateau[coord[0]][coord[1]] = CASE_BAVE_1
+        else:
+            self.plateau[coord[0]][coord[1]] = CASE_BAVE_2
         self.plateau[coord[0]+dx][coord[1]+dy] = crapaud
         self.fenetre.refresh(self.plateau)
 
@@ -82,6 +105,14 @@ class Controlleur:
             for j in range(HAUTEUR_PLATEAU):
                 if self.plateau[i][j] == crapaud:
                     return [i, j]
+
+    def getCaseContent(self, coord):
+        if not 0 <= coord[0] < LARGEUR_PLATEAU:
+            return False
+        elif not 0 <= coord[1] < HAUTEUR_PLATEAU:
+            return False
+        else:
+          return self.plateau[coord[0]][coord[1]]
 
     def checkMoveAllowed(self, moveAttempt):
         dx = moveAttempt[0]
@@ -101,6 +132,37 @@ class Controlleur:
             return False
 
         return True
+
+    def isNextToBomb(self, crapaud):
+        coord = self.getCoordCrapaud(crapaud)
+        x = coord[0]
+        y = coord[1]
+        if self.getCaseContent([x,y + 1]) == CASE_BOMB:
+            return [x,y + 1]
+        elif self.getCaseContent([x,y - 1]) == CASE_BOMB :
+            return [x,y - 1]
+        elif self.getCaseContent([x + 1,y]) == CASE_BOMB :
+            return [x + 1,y]
+        elif self.getCaseContent([x - 1,y]) == CASE_BOMB :
+            return [x - 1,y]
+        else:
+            return False
+
+    def kill(self, crapaud, bombCoord):
+        if crapaud == CRAPAUD_1:
+            bave = CASE_BAVE_1
+            spawn = SPAWN_1
+        else:
+            bave = CASE_BAVE_2
+            spawn = SPAWN_2
+
+        for i in range(LARGEUR_PLATEAU):
+            for j in range(HAUTEUR_PLATEAU):
+                if self.plateau[i][j] == crapaud or self.plateau[i][j] == bave:
+                    self.plateau[i][j] = CASE_MOUVEMENT
+
+        self.plateau[spawn[0]][spawn[1]] = crapaud
+        self.plateau[bombCoord[0]][bombCoord[1]] = CASE_BOMB_EMPTY
 
     def changeTour(self):
         if self.tour == CRAPAUD_1:
