@@ -44,14 +44,22 @@ class Controlleur:
         self.plateau[SPAWN_2[0]][SPAWN_2[1]] = CRAPAUD_2
 
         #on crée les bombes
-        bombcount = 0
-        while bombcount < 5:
-            for i in range(0, LARGEUR_PLATEAU):
-                for j in range(0, HAUTEUR_PLATEAU):
-                    if self.plateau[i][j] == CASE_BOMB_EMPTY:
-                        if randint(1, 100) == 42:
-                            self.plateau[i][j] = CASE_BOMB
-                            bombcount +=1
+        if typeDePartie != PARTIE_EN_LIGNE or fenetre.isServer:
+            bombcount = 0
+            while bombcount < BOMB_AMOUNT:
+                for i in range(0, LARGEUR_PLATEAU):
+                    for j in range(0, HAUTEUR_PLATEAU):
+                        if self.plateau[i][j] == CASE_BOMB_EMPTY:
+                            if randint(1, 100) == 42 and bombcount < BOMB_AMOUNT:
+                                self.plateau[i][j] = CASE_BOMB
+                                if typeDePartie == PARTIE_EN_LIGNE:
+                                    self.joueur2.sendBomb([i, j])
+                                bombcount +=1
+
+        else:
+            bombs = self.joueur1.receiveBombs()
+            for i in range(len(bombs)):
+                self.plateau[bombs[i][0]][bombs[i][1]] = CASE_BOMB
 
         self.fenetre.displayBombPosition(self.plateau)
         self.fenetre.refresh(self.plateau)
@@ -73,7 +81,7 @@ class Controlleur:
             if moveAttemptLetter == "Z":
                 return
             if moveAttemptLetter == CRAPAUD_DIED:
-                self.kill(self.tour)
+                self.kill(self.tour, self.isNextToBomb(self.tour))
             else:
                 moveAttempt = MOVECODE[moveAttemptLetter]
                 if self.checkMoveAllowed(moveAttempt) == True:
@@ -163,6 +171,7 @@ class Controlleur:
 
         self.plateau[spawn[0]][spawn[1]] = crapaud
         self.plateau[bombCoord[0]][bombCoord[1]] = CASE_BOMB_EMPTY
+        self.fenetre.refresh(self.plateau)
 
     def changeTour(self):
         if self.tour == CRAPAUD_1:
