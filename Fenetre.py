@@ -133,7 +133,7 @@ class Fenetre:
 
             x = (i + 1) * MARGE_BOUTON + i * TAILLE_HORIZONTALE_BOUTON
             y = HAUTEUR_BOUTON
-            pygame.draw.rect (self.fenetre, (0, 255, 0), Rect(x,y, TAILLE_HORIZONTALE_BOUTON,TAILLE_VERTCALE_BOUTON), 0)
+            #pygame.draw.rect (self.fenetre, (0, 255, 0), Rect(x,y, TAILLE_HORIZONTALE_BOUTON,TAILLE_VERTCALE_BOUTON), 0)
 
             text = self.texts[i]
             xt = int((TAILLE_HORIZONTALE_BOUTON - text.get_width()) / 2)
@@ -156,24 +156,22 @@ class Fenetre:
         else:
             sens = -1
 
-        while oldx1 != newx1:
+        while True:
+            #calcul du dégradé
+            r= 255 - (min(255, (oldx1 - MARGE_BOUTON) * 255 / (MARGE_BOUTON + TAILLE_HORIZONTALE_BOUTON)))
+            b= max(0, (oldx1 - (2 * MARGE_BOUTON + TAILLE_HORIZONTALE_BOUTON)) * 255 / (MARGE_BOUTON + TAILLE_HORIZONTALE_BOUTON))
+            v= 255 - ( r + b )
 
             self.refreshMenuBackground()
-            pygame.draw.lines(self.fenetre, (255,0,0), False, [(oldx1, y1), (oldx2, y1)], 2)
-            pygame.draw.lines(self.fenetre, (0,0,255), False, [(oldx1,y1), (oldx1, y2)], 2)
-            pygame.draw.lines(self.fenetre, (255,0,255), False, [(oldx1,y2), (oldx2, y2)], 2)
-            pygame.draw.lines(self.fenetre, (255,255,0), False, [(oldx2,y1), (oldx2, y2)], 2)
+            pygame.draw.lines(self.fenetre, (r,v,b), False, [(oldx1,y1), (oldx2, y1)], 2)
+            pygame.draw.lines(self.fenetre, (r,v,b), False, [(oldx1,y1), (oldx1, y2)], 2)
+            pygame.draw.lines(self.fenetre, (r,v,b), False, [(oldx1,y2), (oldx2, y2)], 2)
+            pygame.draw.lines(self.fenetre, (r,v,b), False, [(oldx2,y1), (oldx2, y2)], 2)
             oldx1 += sens
             oldx2 += sens
             pygame.display.flip()
-
-        # On le fait un dernière fois avec les valeurs finales pour que tout soit bien à la fin, notamment si on a refresh sans changer la place du curseur
-        self.refreshMenuBackground()
-        pygame.draw.lines(self.fenetre, (255,0,0), False, [(newx1, y1), (newx2, y1)], 2)
-        pygame.draw.lines(self.fenetre, (0,0,255), False, [(newx1,y1), (newx1, y2)], 2)
-        pygame.draw.lines(self.fenetre, (255,0,255), False, [(newx1,y2), (newx2, y2)], 2)
-        pygame.draw.lines(self.fenetre, (255,255,0), False, [(newx2,y1), (newx2, y2)], 2)
-        pygame.display.flip()
+            if (sens == -1 and oldx1 < newx1) or (sens == 1 and oldx1 > newx1):
+                break
     
     
     def afficheMenuMulti(self):
