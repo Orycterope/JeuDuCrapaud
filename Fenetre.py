@@ -14,7 +14,7 @@ class Fenetre:
 
         self.closing = False
 
-        pygame.display.set_icon(pygame.image.load("res/kf.png"))
+        pygame.display.set_icon(pygame.image.load("res/icon.png"))
 
         pygame.init()
         pygame.display.set_caption('Jeu du Crapaud')
@@ -42,7 +42,7 @@ class Fenetre:
 
         # on initialise le texte du menu ici parcequ'il est suuuuuuper looooong à rendre si on doit le faire à chaque refreshMenu().
         self.texts = ["Partie Solo", "Partie Duo", "Partie en ligne", "Appuyez sur :", "S serveur", "C client", "En attente de client ...",
-                      "Crapaud Jaune a gagné!", "Crapaud Rouge a gagné!", "Faites Entrée pour revenie au menu principal"]
+                      "Crapaud Vert a gagné!", "Crapaud Rouge a gagné!", "Faites Entrée pour revenie au menu principal"]
         for i in range(len(self.texts)):
             if i < 3:
                 myfont = pygame.font.SysFont("arial", 15) # une police sympa à proposer ?
@@ -87,7 +87,7 @@ class Fenetre:
                     x = e.pos[0]
                     y = e.pos[1]
                     
-                    newHighlightedBlock = self.getHighlightedBlock(x, y)
+                    newHighlightedBlock = self.getBlockAt(x, y)
                         
                     if newHighlightedBlock != None:
                         highlightedBlock = newHighlightedBlock
@@ -98,7 +98,7 @@ class Fenetre:
                         x = e.pos[0]
                         y = e.pos[1]
                     
-                        newHighlightedBlock = self.getHighlightedBlock(x, y)
+                        newHighlightedBlock = self.getBlockAt(x, y)
                         
                         if newHighlightedBlock != None:
                             highlightedBlock = newHighlightedBlock
@@ -113,7 +113,7 @@ class Fenetre:
 
         self.lancePartie(highlightedBlock)
     
-    def getHighlightedBlock(self, x, y):
+    def getBlockAt(self, x, y):
         for i in range(3):
             x_min = (i + 1) * MARGE_BOUTON + i * TAILLE_HORIZONTALE_BOUTON
             y_min = HAUTEUR_BOUTON
