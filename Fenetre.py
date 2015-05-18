@@ -26,7 +26,7 @@ class Fenetre:
 
         self.fond1 = pygame.image.load("res/fond1.png").convert_alpha()
         self.fond2 = pygame.image.load("res/fond2.png").convert_alpha()
-        self.perso1 = pygame.image.load("res/perso.png").convert_alpha()
+        self.perso1 = pygame.image.load("res/perso1.png").convert_alpha()
         self.perso2 = pygame.image.load("res/perso2.png").convert_alpha()
         self.victoire1 = pygame.image.load("res/victoirejaune.png").convert_alpha()
         self.victoire2 = pygame.image.load("res/victoirerouge.png").convert_alpha()
