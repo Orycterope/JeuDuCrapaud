@@ -180,6 +180,9 @@ class Fenetre:
         continuer = True
         while continuer and not self.closing:
             for e in pygame.event.get():
+                if e.type == QUIT:
+                    continuer = False
+                    sys.exit()
                 if e.type == KEYDOWN:
                     if e.key == K_s:
                         self.multiInitServeur()
@@ -298,6 +301,9 @@ class Fenetre:
         continuer = True
         while continuer and not self.closing:
             for e in pygame.event.get():
+                if e.type == QUIT:
+                    continuer = False
+                    sys.exit()
                 if e.type == KEYDOWN:
                     if e.key == K_KP_ENTER or e.key == K_RETURN or e.key == K_z:
                         continuer = False
