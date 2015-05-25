@@ -1,10 +1,8 @@
 import pygame
 import sys
-from Constantes import *
 from Controlleur import *
 from pygame.locals import *
 import socket
-from queue import Queue
 import time
 
 
@@ -13,6 +11,7 @@ class Fenetre:
     def __init__(self):
 
         self.closing = False
+        self.mute = False
 
         pygame.display.set_icon(pygame.image.load("res/icon.png"))
 
@@ -58,11 +57,7 @@ class Fenetre:
 
     def afficheMenuPricipal(self):
 
-        pygame.mixer.music.load("res/alex-f.mp3") # Menu le plus electro au monde xD
-        pygame.mixer.music.set_volume(0.6) # Sinon les oreilles saignent
-        #pygame.mixer.music.play(-1)
-
-
+        self.playMusic(MUSIC_MENU)
 
         continuer = True
         highlightedBlock = PARTIE_DUO # correspond au type de partie qui sera sélectionné
@@ -81,6 +76,8 @@ class Fenetre:
                     if e.key == K_KP_ENTER or e.key == K_RETURN or e.key == K_z:
                         continuer = False
                         break
+                    if e.key == K_SPACE:
+                        self.toggleMusic()
                     self.refreshMenu(highlightedBlock, oldHighlightedBlock)
                     oldHighlightedBlock = highlightedBlock
                 if e.type == MOUSEMOTION:
@@ -194,6 +191,8 @@ class Fenetre:
                         break
                     if e.key == K_z:
                         break
+                    if e.key == K_SPACE:
+                        self.toggleMusic()
 
     def multiInitServeur(self):
 
@@ -238,10 +237,7 @@ class Fenetre:
     
     def lancePartie(self, typePartie):
 
-        pygame.mixer.music.load("res/popcorn.mp3")
-        pygame.mixer.music.set_volume(1) # on remet le volume à donf
-        #pygame.mixer.music.play(-1) # param -1 fait répéter à l'infini.
-
+        self.playMusic(MUSIC_PARTIE)
         Controlleur(typePartie, self)
 
 
@@ -306,6 +302,25 @@ class Fenetre:
                     if e.key == K_KP_ENTER or e.key == K_RETURN or e.key == K_z:
                         continuer = False
                         self.afficheMenuPricipal()
+
+    def playMusic(self, musique):
+        if musique == MUSIC_MENU:
+            pygame.mixer.music.load("res/alex-f.mp3") # Menu le plus electro au monde xD
+            pygame.mixer.music.set_volume(0.6) # Sinon les oreilles saignent
+            pygame.mixer.music.play(-1)
+        elif musique == MUSIC_PARTIE:
+            pygame.mixer.music.load("res/popcorn.mp3")
+            pygame.mixer.music.set_volume(1) # on remet le volume à donf
+            pygame.mixer.music.play(-1) # param -1 fait répéter à l'infini.
+        if self.mute:
+            pygame.mixer.music.set_volume(0)
+
+    def toggleMusic(self):
+        self.mute = not self.mute
+        if pygame.mixer.music.get_volume() == 0:
+            pygame.mixer.music.set_volume(1)
+        else:
+            pygame.mixer.music.set_volume(0)
 
 
     def fermer(self):

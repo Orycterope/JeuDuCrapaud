@@ -57,6 +57,8 @@ class PlayerLocal:
                         moveLetter = 'Z'
                         continuer = False
                         break
+                    if event.key == K_SPACE:
+                        self.controlleur.fenetre.toggleMusic()
 
         return moveLetter
 
