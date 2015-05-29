@@ -310,6 +310,8 @@ class Fenetre:
                         self.afficheMenuPricipal()
 
     def playMusic(self, musique):
+        pass # Problème compatibilité musique
+        
         if musique == MUSIC_MENU:
             pygame.mixer.music.load("res/alex-f.mp3") # Menu le plus electro au monde xD
             pygame.mixer.music.set_volume(0.6) # Sinon les oreilles saignent
@@ -322,6 +324,8 @@ class Fenetre:
             pygame.mixer.music.set_volume(0)
 
     def toggleMusic(self):
+        pass # Problème compatibilité musique
+        
         self.mute = not self.mute
         if pygame.mixer.music.get_volume() == 0:
             pygame.mixer.music.set_volume(1)
