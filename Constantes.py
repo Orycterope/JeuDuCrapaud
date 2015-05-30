@@ -35,7 +35,7 @@ CASE_POINT_GAINED = "G"
 CASE_BAVE_1 = "K"
 CASE_BAVE_2 = "L"
 CASE_CRAPAUD = "C"
-CASE_BOMB = "O" # c'est un o comme Opéra, pas un zéro
+CASE_BOMB = "O"
+CASE_EXPLOSION = "X"
 
 MOVECODE = {'A': [0,-2], 'B': [1,-1], 'C': [2,0], 'D': [1,1], 'E': [0,2], 'F': [-1,1], 'G': [-2,0], 'H': [-1,-1]}
-CRAPAUD_DIED = "X"

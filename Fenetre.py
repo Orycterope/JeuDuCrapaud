@@ -11,7 +11,7 @@ class Fenetre:
     def __init__(self):
 
         self.closing = False
-        self.mute = False
+        self.mute = True
 
         pygame.display.set_icon(pygame.image.load("res/icon.png"))
 
@@ -32,6 +32,7 @@ class Fenetre:
         self.bave1 = pygame.image.load("res/bave1.png").convert_alpha()
         self.bave2 = pygame.image.load("res/bave2.png").convert_alpha()
         self.bgmenu = pygame.image.load("res/bgmenu.png").convert_alpha()
+        self.explosion = pygame.image.load("res/explosion.png").convert_alpha()
         self.bomb = pygame.image.load("res/bomb.png").convert_alpha()
         self.bomb.fill((255, 255, 255, 128), None, pygame.BLEND_RGBA_MULT)
         self.bgvictoire = pygame.Surface(self.fenetre.get_size()).convert()
@@ -265,6 +266,10 @@ class Fenetre:
                     self.fenetre.blit(self.perso2,(i * LARGEUR_CASE, j * HAUTEUR_CASE))
                 elif case == CASE_BOMB_EMPTY or case == CASE_BOMB:
                     self.fenetre.blit(self.fond2, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
+                elif case == CASE_EXPLOSION:
+                    self.fenetre.blit(self.fond2, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
+                    self.fenetre.blit(self.explosion, (i * LARGEUR_CASE, j * HAUTEUR_CASE))
+
         pygame.display.flip()
 
 

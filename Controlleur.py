@@ -80,20 +80,15 @@ class Controlleur:
             moveAttemptLetter = self.tourPlayer.waitForPlay()
             if moveAttemptLetter == "Z":
                 return
-            if moveAttemptLetter == CRAPAUD_DIED:
-                self.kill(self.tour, self.isNextToBomb(self.tour))
-            else:
-                moveAttempt = MOVECODE[moveAttemptLetter]
-                if self.checkMoveAllowed(moveAttempt) == True:
-                    self.move(self.tour, moveAttempt[0], moveAttempt[1])
-                    if self.isNextToBomb(self.tour) != False:
-                        self.kill(self.tour, self.isNextToBomb(self.tour))
-                        self.informOtherPlayer(CRAPAUD_DIED)
-                    else:
-                        self.informOtherPlayer(moveAttemptLetter)
-                    hasPlayed = True
-                    if self.checkLose():
-                        return
+            moveAttempt = MOVECODE[moveAttemptLetter]
+            if self.checkMoveAllowed(moveAttempt) == True:
+                self.move(self.tour, moveAttempt[0], moveAttempt[1])
+                if self.isNextToBomb(self.tour) != False:
+                    self.kill(self.tour, self.isNextToBomb(self.tour))
+                self.informOtherPlayer(moveAttemptLetter)
+                hasPlayed = True
+                if self.checkLose():
+                    return
         self.changeTour()
 
     def move(self, crapaud, dx, dy):
@@ -170,7 +165,7 @@ class Controlleur:
                     self.plateau[i][j] = CASE_MOUVEMENT
 
         self.plateau[spawn[0]][spawn[1]] = crapaud
-        self.plateau[bombCoord[0]][bombCoord[1]] = CASE_BOMB_EMPTY
+        self.plateau[bombCoord[0]][bombCoord[1]] = CASE_EXPLOSION
         self.fenetre.refresh(self.plateau)
 
     def changeTour(self):
