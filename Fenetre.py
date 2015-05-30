@@ -10,8 +10,8 @@ class Fenetre:
 
     def __init__(self):
 
-        self.closing = False
-        self.mute = True
+        self.closing = False # utilisé pour arreter les boucles d'event
+        self.mute = False
 
         pygame.display.set_icon(pygame.image.load("res/icon.png"))
 
@@ -19,7 +19,7 @@ class Fenetre:
         pygame.display.set_caption('Jeu du Crapaud')
 
         self.connexion = None
-        self.isServer = False # utilisé pour déterminer qui commence
+        self.isServer = False # utilisé pour déterminer qui commence et qui génère les bombes
 
         self.fenetre = pygame.display.set_mode((LARGEUR_FENETRE, HAUTEUR_FENETRE))
 
@@ -37,10 +37,8 @@ class Fenetre:
         self.bomb.fill((255, 255, 255, 128), None, pygame.BLEND_RGBA_MULT)
         self.bgvictoire = pygame.Surface(self.fenetre.get_size()).convert()
         self.bgvictoire.fill((0, 0, 0))
-        self.position_perso1 = self.perso1.get_rect()
-        self.position_perso2 = self.perso2.get_rect()
 
-        # on initialise le texte du menu ici parcequ'il est suuuuuuper looooong à rendre si on doit le faire à chaque refreshMenu().
+        # on prépare les textes du menu ici parcequ'il sont suuuuuuper looooong à rendre si on doit le faire à chaque refreshMenu().
         self.texts = ["Partie Solo", "Partie Duo", "Partie en ligne", "Appuyez sur :", "S serveur", "C client", "En attente de client ...",
                       "Crapaud Vert a gagné!", "Crapaud Rouge a gagné!", "Faites Entrée pour revenie au menu principal"]
         for i in range(len(self.texts)):
@@ -53,28 +51,29 @@ class Fenetre:
             else:
                 myfont = pygame.font.SysFont("arial", 20)
                 self.texts[i] = myfont.render(self.texts[i], 1, (0, 255, 0))
-        self.afficheMenuPricipal()
 
+        self.afficheMenuPricipal() # et on balance le menu
 
     def afficheMenuPricipal(self):
 
         self.playMusic(MUSIC_MENU)
 
-        continuer = True
-        highlightedBlock = PARTIE_DUO # correspond au type de partie qui sera sélectionné
+        continuer = True # controle la boucle
+
+        highlightedBlock = PARTIE_DUO # correspond au bouton sur lequel se trouve le curseur
         oldHighlightedBlock = PARTIE_DUO # pour l'animation
         self.refreshMenu(highlightedBlock, oldHighlightedBlock)
         while continuer:
             for e in pygame.event.get():
                 if e.type == QUIT:
                     continuer = False
-                    sys.exit()
+                    self.fermer()
                 if e.type == KEYDOWN:
                     if e.key == K_KP4 or e.key == K_LEFT:
                         highlightedBlock = (highlightedBlock - 1) % 3
                     if e.key == K_KP6 or e.key == K_RIGHT:
                         highlightedBlock = (highlightedBlock + 1) % 3
-                    if e.key == K_KP_ENTER or e.key == K_RETURN or e.key == K_z:
+                    if e.key == K_KP_ENTER or e.key == K_RETURN:
                         continuer = False
                         break
                     if e.key == K_SPACE:
@@ -131,7 +130,6 @@ class Fenetre:
 
             x = (i + 1) * MARGE_BOUTON + i * TAILLE_HORIZONTALE_BOUTON
             y = HAUTEUR_BOUTON
-            #pygame.draw.rect (self.fenetre, (0, 255, 0), Rect(x,y, TAILLE_HORIZONTALE_BOUTON,TAILLE_VERTCALE_BOUTON), 0)
 
             text = self.texts[i]
             xt = int((TAILLE_HORIZONTALE_BOUTON - text.get_width()) / 2)
@@ -154,8 +152,7 @@ class Fenetre:
         else:
             sens = -1
 
-        while True:
-            #calcul du dégradé
+        while True: #calcul du dégradé
             r= 255 - (min(255, (oldx1 - MARGE_BOUTON) * 255 / (MARGE_BOUTON + TAILLE_HORIZONTALE_BOUTON)))
             b= max(0, (oldx1 - (2 * MARGE_BOUTON + TAILLE_HORIZONTALE_BOUTON)) * 255 / (MARGE_BOUTON + TAILLE_HORIZONTALE_BOUTON))
             v= 255 - ( r + b )
@@ -170,8 +167,7 @@ class Fenetre:
             pygame.display.flip()
             if (sens == -1 and oldx1 < newx1) or (sens == 1 and oldx1 > newx1):
                 break
-    
-    
+
     def afficheMenuMulti(self):
         self.fenetre.blit(self.bgmenu, (0,0))
         self.fenetre.blit(self.texts[3], (LARGEUR_FENETRE//2 - self.texts[3].get_width()//2, HAUTEUR_FENETRE//3))
@@ -204,14 +200,13 @@ class Fenetre:
         pygame.display.flip()
 
         self.isServer = True
-        HOST = '127.0.0.1'
 
         # 1) création du socket :
         mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         # 2) liaison du socket à une adresse précise :
         try:
-            mySocket.bind((HOST, PORT))
+            mySocket.bind((ADRESSE_LOCAL, PORT))
         except socket.error:
             print("La liaison du socket à l'adresse choisie a échoué.")
             sys.exit()
@@ -225,25 +220,21 @@ class Fenetre:
 
     def multiInitClient(self):
 
-        HOST = '127.0.0.1'
-
         # 1) création du socket :
         self.connexion = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         # 2) envoi d'une requête de connexion au serveur :
         try:
-            self.connexion.connect((HOST, PORT))
+            self.connexion.connect((ADRESSE_FOREIGN, PORT))
         except socket.error:
             print("La connexion a échoué.")
             self.fermer()
         print("Connexion établie avec le serveur.")
-    
-    
+
     def lancePartie(self, typePartie):
 
         self.playMusic(MUSIC_PARTIE)
         Controlleur(typePartie, self)
-
 
     def refresh(self, plateau):
 
@@ -272,10 +263,9 @@ class Fenetre:
 
         pygame.display.flip()
 
-
     def displayBombPosition(self, plateau):
 
-        for i in range(LARGEUR_PLATEAU):
+        for i in range(LARGEUR_PLATEAU): #on parcours le plateau à la recherche des bombes
             for j in range(HAUTEUR_PLATEAU):
                 case = plateau[i][j]
                 if case == CASE_MOUVEMENT or case == CRAPAUD_1 or case == CRAPAUD_2 or case == CASE_BAVE_1 or case == CASE_BAVE_2:
@@ -315,8 +305,6 @@ class Fenetre:
                         self.afficheMenuPricipal()
 
     def playMusic(self, musique):
-        pass # Problème compatibilité musique
-        
         if musique == MUSIC_MENU:
             pygame.mixer.music.load("res/alex-f.mp3") # Menu le plus electro au monde xD
             pygame.mixer.music.set_volume(0.6) # Sinon les oreilles saignent
@@ -329,20 +317,17 @@ class Fenetre:
             pygame.mixer.music.set_volume(0)
 
     def toggleMusic(self):
-        pass # Problème compatibilité musique
-        
         self.mute = not self.mute
         if pygame.mixer.music.get_volume() == 0:
             pygame.mixer.music.set_volume(1)
         else:
             pygame.mixer.music.set_volume(0)
 
-
     def fermer(self):
         self.closing = True
         if self.connexion != None:
             try:
-                self.connexion.send("Z".encode('ascii'))
+                self.connexion.send("Z".encode('ascii')) #on envoi un caractère pour débloquer l'attente du client, et le Z l'informe qu'on arrete.
             except socket.error:
                 pass
             self.connexion.close()

@@ -27,13 +27,11 @@ class PlayerDistant:
 
 
     def sendBomb(self, bombLocation):
-        print("sending :")
         for i in range(0,2):
-            code = str(bombLocation[i])
-            if bombLocation[i] < 10:
+            code = str(bombLocation[i]) #on envoit le nombre en caractère ascii pcq envoyer un int brut ne marche pas -_-
+            if bombLocation[i] < 10: # on envoit toujours deux caractères
                 code = '0' + code
             self.connexion.send(code.encode('ascii'))
-            print(" -"+str(i)+": " + code)
 
 
 
@@ -49,6 +47,5 @@ class PlayerDistant:
                     self.controlleur.fenetre.fermer()
                 else:
                     bombs[i][j] = coord
-            print("bomb " + str(i) + " :\n -x: " + str(bombs[i][0]) + "\n -y: " + str(bombs[i][1]))
 
         return bombs
