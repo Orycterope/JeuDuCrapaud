@@ -66,6 +66,9 @@ class Controlleur:
             if self.fenetre.closing:
                 return
             self.faireJouer()
+            
+        if self.fenetre.connexion != None:
+            self.fenetre.connexion.close()
         
         fenetre.afficheMenuVictoire(self.tour)
 
